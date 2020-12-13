@@ -1,4 +1,4 @@
-# froeling-web-connect-logger
+# froeling-connect-web-logger
 Log status information from connect-web.froeling.com.
 
 # Prerequisites
@@ -8,7 +8,7 @@ Log status information from connect-web.froeling.com.
 
 # Input (configuration)
 - account name and password @connect-web.froeling.com
-- data acquisistion period in minutes (15, 30, 60)
+- data acquisition period in minutes (15, 30, 60)
 
 # Process
 - get all the available status data from the froeling website, write status values to a database
@@ -17,3 +17,10 @@ Log status information from connect-web.froeling.com.
 # Output
 - a SQLite database file containing the periodic data
 - process status information
+
+# Running app
+- change directory(cd) to where this project resides
+- enter command: python3 -m logger username password period
+  - username: registered username at connect-web.froeling.com
+  - password: registered password for the above user
+  - period:   logging period in minutes (15, 30, 60)
