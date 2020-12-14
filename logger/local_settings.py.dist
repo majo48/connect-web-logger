@@ -3,7 +3,8 @@
     - The file 'local_settings.py' is the working version (private, ignored by GIT)
     - The file 'local_settings.py.dist' is version controlled (public in GitHub)
     - New repository:
-      Copy the 'local_settings.py.dist' to 'local_settings.py' and edit the secrets
+      - Mark this file as textfile (removes inspections)
+      - Copy the 'local_settings.py.dist' to 'local_settings.py' and edit the secrets
 """
 
 
@@ -20,4 +21,9 @@ def password():
 def period_minutes():
     """ period (in minutes: {15,30,60}) for polling the above registered account """
     return '0'
+
+
+def login_url():
+    """ URL of the connect-web site  """
+    return 'https://connect-web.froeling.com/#/login'
 

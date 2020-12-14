@@ -1,4 +1,4 @@
-# froeling-connect-web-logger
+# connect-web-logger
 Log information from a registered account at connect-web.froeling.com.
 
 # Prerequisites
