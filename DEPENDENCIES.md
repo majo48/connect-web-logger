@@ -15,4 +15,4 @@ This application is built and tested with the following dependencies:
 Developed with:
 
 - ***pycharm*** (Professional 2020.3): Jetbrains Python IDE 
-- dependencies are located in a new virtual environment, stored in the project repository folder ***froeling-connect-web-logger/venv*** (excluded in .gitignore)
+- dependencies are located in a new virtual environment, stored in the project repository folder ***connect-web-logger/venv*** (excluded in .gitignore)
