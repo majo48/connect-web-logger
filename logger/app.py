@@ -10,7 +10,7 @@ import sys
 def run(username=None, password=None, period_minutes=None):
     """ argument == 'default' will take value from configuration file """
     try:
-        import local_settings
+        from logger import local_settings
         if username == None:
             username = local_settings.username()
         print('username: ' + username)
