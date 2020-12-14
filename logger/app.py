@@ -7,14 +7,24 @@
 import sys
 
 
-def run(username='default', password='default', period_minutes='default'):
+def run(username=None, password=None, period_minutes=None):
     """ argument == 'default' will take value from configuration file """
-    print('username: '+username)
-    print('password: '+password)
-    print('period_minutes: '+period_minutes)
+    try:
+        import local_settings
+        if username == None:
+            username = local_settings.username()
+        print('username: ' + username)
+        if password == None:
+            password = local_settings.password()
+        print('password: ' + password)
+        if period_minutes == None:
+            period_minutes = local_settings.period_minutes()
+        print('period_minutes: ' + period_minutes)
+    except ModuleNotFoundError:
+        print('ModuleNotFoundError: please copy local_settings.py.dist to local_settings.py')
 
 
-if __name__ == '__main__':
+def manage_arguments():
     """ handle functional arguments from command line interface """
     arg_cnt = len(sys.argv)
     if arg_cnt == 1:
@@ -31,3 +41,7 @@ if __name__ == '__main__':
         run(sys.argv[1], sys.argv[2], sys.argv[3])
     else:
         print('Error: too many arguments')
+
+
+if __name__ == '__main__':
+    manage_arguments()

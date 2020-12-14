@@ -1,0 +1,23 @@
+""" This file contains all confidential information for the logger package
+    Notes:
+    - The file 'local_settings.py' is the working version (private, ignored by GIT)
+    - The file 'local_settings.py.dist' is version controlled (public in GitHub)
+    - New repository:
+      Copy the 'local_settings.py.dist' to 'local_settings.py' and edit the secrets
+"""
+
+
+def username():
+    """ name of the registered account at connect-web.groeling.com """
+    return 'n/a'
+
+
+def password():
+    """ password for the registered account at connect-web.froeling.com """
+    return 'n/a'
+
+
+def period_minutes():
+    """ period (in minutes: {15,30,60}) for polling the above registered account """
+    return '0'
+
