@@ -8,7 +8,7 @@ import sys
 
 
 def run(username=None, password=None, period_minutes=None):
-    """ argument == 'default' will take value from configuration file """
+    """ argument == 'None' will be replaced with the value from the configuration file """
     try:
         from logger import local_settings
         if username == None:
