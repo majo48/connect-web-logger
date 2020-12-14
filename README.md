@@ -31,5 +31,5 @@ Log information from a registered account at connect-web.froeling.com.
 - this app puts some strain on the froeling.com website
 - use only for optimizing your Fröling PE1 pellet boiler
 - web scraping is legal for "intended usage" and for public data
-  - reading your own "private" data is the same as reading public data (IANAL) 
+  - IMO reading your own "private" data is the same as reading public data (IANAL) 
   - Froeling should provide a (local) LAN-API to the PE1 pellet boiler, avoiding the hassle of going thru the internet and the Fröling servers in order to get some local data in the first place 
