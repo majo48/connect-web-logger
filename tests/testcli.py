@@ -24,7 +24,7 @@ class TestRunCLI(unittest.TestCase):
             app.run('1','2','3')
         out = f.getvalue()
         out = out.splitlines()
-        self.assertEqual(len(out), 3) # outputs 3 lines
+        self.assertEqual(len(out), 10) # outputs 10 lines
 
 
 if __name__ == '__main__':

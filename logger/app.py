@@ -5,6 +5,7 @@
 
 """
 import sys
+from logger import session
 
 
 def run(username=None, password=None, period_minutes=None):
@@ -20,6 +21,8 @@ def run(username=None, password=None, period_minutes=None):
         if period_minutes == None:
             period_minutes = local_settings.period_minutes()
         print('period_minutes: ' + period_minutes)
+        s = session.Session(local_settings.login_url(), username, password)
+        pass
     except ModuleNotFoundError:
         print('ModuleNotFoundError: please copy local_settings.py.dist to local_settings.py')
 
