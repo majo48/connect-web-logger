@@ -27,3 +27,15 @@ def login_url():
     """ URL of the connect-web site  """
     return 'https://connect-web.froeling.com/#/login'
 
+
+def facility_url():
+    """ URL of the facility page """
+    return 'https://connect-web.froeling.com/#/facility-dashboard'
+
+
+def facility_info_url():
+    """ URL of the facility info page
+        Note:
+            unknown what 27332 stands for, probably the user index number
+    """
+    return 'https://connect-web.froeling.com/#/facility/27332/info/information'
