@@ -48,7 +48,8 @@ class Session:
         """ scrape infos from the facility info site """
         print('facility info')
         self.driver.get(local_settings.facility_info_url())
-        time.sleep(3) # wait for jscript to complete
+        time.sleep(3)
+        # wait 3 seconds for jscript to complete
         keys = self.driver.find_elements_by_xpath("//div[@class='key']")
         values = self.driver.find_elements_by_xpath("//div[@class='value']")
         idx = 0
@@ -62,7 +63,19 @@ class Session:
     def _get_boiler_info(self):
         """ scrape infos from the boiler info site """
         print('boiler info')
-        pass # work in progress
+        self.driver.get(local_settings.boiler_info_url())
+        time.sleep(3)
+        # wait 3 seconds for jscript to complete
+        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
+        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # misspelling in html source
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            value = values[idx].text
+            value = value.replace(' %', '') # remove percent
+            value = value.replace(' °C', '') # remove temperatur
+            print('Boiler information, ' + key + ', ' + value)
+            idx = idx + 1
 
     def _get_heating_info(self):
         """ scrape infos from the heating info site """
