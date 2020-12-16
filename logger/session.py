@@ -96,7 +96,20 @@ class Session:
     def _get_tank_info(self):
         """ scrape infos from the tank info site """
         print('DHW tank 01 info')
-        pass # work in progress
+        self.driver.get(local_settings.tank_info_url())
+        time.sleep(3)
+        # wait 3 seconds for jscript to complete
+        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
+        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            value = values[idx].text
+            value = value.replace(' °C', '') # remove temperature
+            value = value.replace(' %', '')  # remove percent
+            print('Heating information, ' + key + ', ' + value)
+            idx = idx + 1
+        dummy = 'stop'
 
     def _get_fead_info(self):
         """ scrape infos from the feed info site """

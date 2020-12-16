@@ -54,3 +54,9 @@ def heating_info_url():
     ''' URL of the heating info page '''
     url = 'https://connect-web.froeling.com/#/facility/?/components/300_3100'
     return url.replace('?', customer_id())
+
+
+def tank_info_url():
+    ''' URL of the tank info page '''
+    url = 'https://connect-web.froeling.com/#/facility/?/components/200_2100'
+    return url.replace('?', customer_id())
