@@ -58,7 +58,20 @@ class Session:
             value = values[idx].text
             value = value.replace(' h', '') # remove hours designation (redundant)
             print('System' + ',' + key + ', ' + value)
+            if key == 'Last signal at':
+                self.timestamp = self.__set_timestamp(value)
             idx = idx + 1
+
+    def __set_timestamp(self, value):
+        """ set timestamp of format yyyy.MM.dd.hh.mm.ss """
+        dot = '.'
+        year = value[6:10]
+        mon = value[3:5]
+        day = value[0:2]
+        hour = value[11:13]
+        min = value[14:16]
+        sec = value[17:19]
+        return year + dot + mon + dot + day + dot + hour + dot + min + dot + sec
 
     def _get_boiler_info(self):
         """ scrape infos from the boiler info site """
