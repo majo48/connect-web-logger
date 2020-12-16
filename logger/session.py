@@ -57,7 +57,7 @@ class Session:
             key = keys[idx].text
             value = values[idx].text
             value = value.replace(' h', '') # remove hours designation (redundant)
-            print('System information, ' + key + ', ' + value)
+            print('System' + ',' + key + ', ' + value)
             idx = idx + 1
 
     def _get_boiler_info(self):
@@ -74,7 +74,7 @@ class Session:
             value = values[idx].text
             value = value.replace(' %', '') # remove percent
             value = value.replace(' °C', '') # remove temperatur
-            print('Boiler information, ' + key + ', ' + value)
+            print('Boiler' + ',' + key + ', ' + value)
             idx = idx + 1
 
     def _get_heating_info(self):
@@ -90,7 +90,7 @@ class Session:
             key = keys[idx].text
             value = values[idx].text
             value = value.replace(' °C', '') # remove temperature
-            print('Heating information, ' + key + ', ' + value)
+            print('Heating' + ',' + key + ', ' + value)
             idx = idx + 1
 
     def _get_tank_info(self):
@@ -107,14 +107,26 @@ class Session:
             value = values[idx].text
             value = value.replace(' °C', '') # remove temperature
             value = value.replace(' %', '')  # remove percent
-            print('Heating information, ' + key + ', ' + value)
+            print('Tank' + ',' + key + ', ' + value)
             idx = idx + 1
-        dummy = 'stop'
 
     def _get_fead_info(self):
         """ scrape infos from the feed info site """
         print('feed system info')
-        pass # work in progress
+        self.driver.get(local_settings.feed_info_url())
+        time.sleep(3)
+        # wait 3 seconds for jscript to complete
+        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
+        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            value = values[idx].text
+            value = value.replace(' kg', '') # remove kilograms
+            value = value.replace(' t', '') # remove tons
+            value = value.replace(' %', '') # remove percent
+            print('Feed' + ',' + key + ', ' + value)
+            idx = idx + 1
 
     def _logout(self):
         """ logout from the connect-web.froeling.com site """
