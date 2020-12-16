@@ -67,7 +67,7 @@ class Session:
         time.sleep(3)
         # wait 3 seconds for jscript to complete
         keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # misspelling in html source
+        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
         idx = 0
         while idx < len(keys):
             key = keys[idx].text
@@ -80,7 +80,18 @@ class Session:
     def _get_heating_info(self):
         """ scrape infos from the heating info site """
         print('heating circuit 01 info')
-        pass # work in progress
+        self.driver.get(local_settings.heating_info_url())
+        time.sleep(3)
+        # wait 3 seconds for jscript to complete
+        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
+        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            value = values[idx].text
+            value = value.replace(' °C', '') # remove temperature
+            print('Heating information, ' + key + ', ' + value)
+            idx = idx + 1
 
     def _get_tank_info(self):
         """ scrape infos from the tank info site """
