@@ -18,6 +18,11 @@ def password():
     return 'n/a'
 
 
+def customer_id():
+    """ customer id is the database index for customer number """
+    return 'n/a'
+
+
 def period_minutes():
     """ period (in minutes: {15,30,60}) for polling the above registered account """
     return '0'
@@ -34,8 +39,12 @@ def facility_url():
 
 
 def facility_info_url():
-    """ URL of the facility info page
-        Note:
-            unknown what 27332 stands for, probably the user index number
-    """
-    return 'https://connect-web.froeling.com/#/facility/27332/info/information'
+    """ URL of the facility info page """
+    url = 'https://connect-web.froeling.com/#/facility/?/info/information'
+    return url.replace('?', customer_id())
+
+
+def boiler_info_url():
+    ''' URL of the boiler info page '''
+    url = 'https://connect-web.froeling.com/#/facility/?/components/1_100'
+    return url.replace('?', customer_id())
