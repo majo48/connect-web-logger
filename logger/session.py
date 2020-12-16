@@ -8,6 +8,7 @@ from logger import local_settings
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 
 class Session:
@@ -16,16 +17,14 @@ class Session:
         try:
             self._login(login_url, username, password)
             self._get_infos()
-            self._logout()
-            pass
         except Exception as e:
             print('Error: ' + str(e))
-            pass
         finally:
             self._logout()
 
     def _login(self, login_url, username, password):
-        print('loging in to url: ' + login_url)
+        """ login to the connect-web.froeling.com site """
+        print('logging in to url: ' + login_url)
         # open login page
         self.driver = webdriver.Firefox()
         self.driver.get(login_url)
@@ -36,35 +35,52 @@ class Session:
             print('successfull login')
         else:
             print('Error logging in')
-        pass
-
-    def _get_facility_info(self):
-        print('facility info')
-        self.driver.get(local_settings.facility_info_url())
-        #todo continue here
-        WebDriverWait(self.driver, 120).until(EC.url_changes(local_settings.facility_info_url()))
-
-    def _get_boiler_info(self):
-        print('boiler info')
-
-    def _get_heating_info(self):
-        print('heating circuit 01 info')
-
-    def _get_tank_info(self):
-        print('DHW tank 01 info')
-
-    def _get_fead_info(self):
-        print('feed system info')
 
     def _get_infos(self):
+        """ scrape infos from the connect-web.froeling.com site """
         self._get_facility_info()
         self._get_boiler_info()
         self._get_heating_info()
         self._get_tank_info()
         self._get_fead_info()
-        pass
+
+    def _get_facility_info(self):
+        """ scrape infos from the facility info site """
+        print('facility info')
+        self.driver.get(local_settings.facility_info_url())
+        time.sleep(3) # wait for jscript to complete
+        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
+        values = self.driver.find_elements_by_xpath("//div[@class='value']")
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            value = values[idx].text
+            value = value.replace(' h', '') # remove hours designation (redundant)
+            print('System information, ' + key + ', ' + value)
+            idx = idx + 1
+
+    def _get_boiler_info(self):
+        """ scrape infos from the boiler info site """
+        print('boiler info')
+        pass # work in progress
+
+    def _get_heating_info(self):
+        """ scrape infos from the heating info site """
+        print('heating circuit 01 info')
+        pass # work in progress
+
+    def _get_tank_info(self):
+        """ scrape infos from the tank info site """
+        print('DHW tank 01 info')
+        pass # work in progress
+
+    def _get_fead_info(self):
+        """ scrape infos from the feed info site """
+        print('feed system info')
+        pass # work in progress
 
     def _logout(self):
+        """ logout from the connect-web.froeling.com site """
         print('logout')
         self.driver.quit()
 
