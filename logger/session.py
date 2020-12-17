@@ -16,11 +16,56 @@ class Session:
     def __init__(self, login_url, username, password):
         try:
             self._login(login_url, username, password)
-            self._get_infos()
+            self._get_facility_info()
+            self._get_boiler_info()
+            self._get_heating_info()
+            self._get_tank_info()
+            self._get_fead_info()
         except Exception as e:
             print('Error: ' + str(e))
         finally:
             self._logout()
+
+    def __set_timestamp(self, value):
+        """ set timestamp of format yyyy.MM.dd.hh.mm.ss """
+        dot = '.'
+        year = value[6:10]
+        mon = value[3:5]
+        day = value[0:2]
+        hour = value[11:13]
+        min = value[14:16]
+        sec = value[17:19]
+        return year + dot + mon + dot + day + dot + hour + dot + min + dot + sec
+
+    def __get_value_pairs(self, driver, page_id):
+        """ get all value pairs from the WebDriver object """
+        keys = driver.find_elements_by_xpath("//div[@class='key']")
+        values = driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            value = values[idx].text
+            pair = self.__split_value_unit(value)
+            value = pair['value']
+            tunit = pair['unit']
+            print(page_id + ', ' + key + ', ' + value + ', ' + tunit)
+            idx = idx + 1
+
+    def __split_value_unit(self, value_unit):
+        """ properly split values and technical units """
+        units = { 'percent': '%', 'degrees': '°C', 'hours': 'h', 'tons': 't', 'kilograms': 'kg' }
+        spos = value_unit.rfind(' ')
+        if spos == -1:
+            # does not contain a unit
+            return { 'value': value_unit, 'unit': ''}
+        else:
+            # may contain a technical unit
+            u = value_unit[spos+1:]
+            v = value_unit[:spos]
+            if u in units.values():
+                return { 'value': v, 'unit': u}
+            else:
+                return {'value': value_unit, 'unit': ''}
 
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
@@ -36,110 +81,52 @@ class Session:
         else:
             print('Error logging in')
 
-    def _get_infos(self):
-        """ scrape infos from the connect-web.froeling.com site """
-        self._get_facility_info()
-        self._get_boiler_info()
-        self._get_heating_info()
-        self._get_tank_info()
-        self._get_fead_info()
-
     def _get_facility_info(self):
         """ scrape infos from the facility info site """
         print('facility info')
         self.driver.get(local_settings.facility_info_url())
-        time.sleep(3)
-        # wait 3 seconds for jscript to complete
+        time.sleep(3) # wait 3 seconds for jscript to complete
         keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@class='value']")
+        values = self.driver.find_elements_by_xpath("//div[@class='value']") # BEWARE: not a typo
         idx = 0
         while idx < len(keys):
             key = keys[idx].text
             value = values[idx].text
-            value = value.replace(' h', '') # remove hours designation (redundant)
-            print('System' + ',' + key + ', ' + value)
+            pair = self.__split_value_unit(value)
+            value = pair['value']
+            tunit = pair['unit']
+            print('System' + ', ' + key + ', ' + value + ', ' + tunit)
             if key == 'Last signal at':
                 self.timestamp = self.__set_timestamp(value)
             idx = idx + 1
-
-    def __set_timestamp(self, value):
-        """ set timestamp of format yyyy.MM.dd.hh.mm.ss """
-        dot = '.'
-        year = value[6:10]
-        mon = value[3:5]
-        day = value[0:2]
-        hour = value[11:13]
-        min = value[14:16]
-        sec = value[17:19]
-        return year + dot + mon + dot + day + dot + hour + dot + min + dot + sec
 
     def _get_boiler_info(self):
         """ scrape infos from the boiler info site """
         print('boiler info')
         self.driver.get(local_settings.boiler_info_url())
-        time.sleep(3)
-        # wait 3 seconds for jscript to complete
-        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            value = values[idx].text
-            value = value.replace(' %', '') # remove percent
-            value = value.replace(' °C', '') # remove temperatur
-            print('Boiler' + ',' + key + ', ' + value)
-            idx = idx + 1
+        time.sleep(3) # wait 3 seconds for jscript to complete
+        self.__get_value_pairs(self.driver, 'Boiler')
 
     def _get_heating_info(self):
         """ scrape infos from the heating info site """
         print('heating circuit 01 info')
         self.driver.get(local_settings.heating_info_url())
-        time.sleep(3)
-        # wait 3 seconds for jscript to complete
-        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            value = values[idx].text
-            value = value.replace(' °C', '') # remove temperature
-            print('Heating' + ',' + key + ', ' + value)
-            idx = idx + 1
+        time.sleep(3) # wait 3 seconds for jscript to complete
+        self.__get_value_pairs(self.driver, 'Heating')
 
     def _get_tank_info(self):
         """ scrape infos from the tank info site """
         print('DHW tank 01 info')
         self.driver.get(local_settings.tank_info_url())
-        time.sleep(3)
-        # wait 3 seconds for jscript to complete
-        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            value = values[idx].text
-            value = value.replace(' °C', '') # remove temperature
-            value = value.replace(' %', '')  # remove percent
-            print('Tank' + ',' + key + ', ' + value)
-            idx = idx + 1
+        time.sleep(3) # wait 3 seconds for jscript to complete
+        self.__get_value_pairs(self.driver, 'Tank')
 
     def _get_fead_info(self):
         """ scrape infos from the feed info site """
         print('feed system info')
         self.driver.get(local_settings.feed_info_url())
-        time.sleep(3)
-        # wait 3 seconds for jscript to complete
-        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            value = values[idx].text
-            value = value.replace(' kg', '') # remove kilograms
-            value = value.replace(' t', '') # remove tons
-            value = value.replace(' %', '') # remove percent
-            print('Feed' + ',' + key + ', ' + value)
-            idx = idx + 1
+        time.sleep(3) # wait 3 seconds for jscript to complete
+        self.__get_value_pairs(self.driver, 'Feed')
 
     def _logout(self):
         """ logout from the connect-web.froeling.com site """

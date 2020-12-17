@@ -19,7 +19,11 @@ def password():
 
 
 def customer_id():
-    """ customer id is the database index for customer number """
+    """ customer id is the database index for customer number
+        Note:
+            Open your personal account and navigate to the System page,
+            the customer_id (DB index, number) is the forth part of the URL
+    """
     return 'n/a'
 
 
