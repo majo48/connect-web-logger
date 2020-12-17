@@ -1,4 +1,5 @@
 """ this file contains code for querying the connect-web registered account
+    Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
     functions:
         _login(...)
         _get_infos()

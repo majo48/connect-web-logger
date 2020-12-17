@@ -1,4 +1,5 @@
 # Dependencies
+Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
 
 This application is built and tested with the following dependencies:
 
