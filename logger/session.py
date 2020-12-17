@@ -16,7 +16,7 @@ class Session:
     def __init__(self, login_url, username, password):
         try:
             self._login(login_url, username, password)
-            self._get_facility_info()
+            self._get_system_info()
             self._get_boiler_info()
             self._get_heating_info()
             self._get_tank_info()
@@ -27,7 +27,7 @@ class Session:
             self._logout()
 
     def __get_value_pairs(self, driver, page_id):
-        """ get all value pairs from the WebDriver object """
+        """ get value pairs from the WebDriver object """
         keys = driver.find_elements_by_xpath("//div[@class='key']")
         system_page = page_id == 'System'
         if system_page:
@@ -37,9 +37,9 @@ class Session:
         idx = 0
         while idx < len(keys):
             key = keys[idx].text
+            value = values[idx].text
             if system_page and key == 'Last signal at':
                 self.timestamp = self.__set_timestamp(value)
-            value = values[idx].text
             pair = self.__split_value_unit(value)
             value = pair['value']
             tunit = pair['unit']
@@ -75,15 +75,19 @@ class Session:
         # open login page
         self.driver = webdriver.Firefox()
         self.driver.get(login_url)
-        # wait for manual login to complete
-        WebDriverWait(self.driver, 120).until(EC.url_changes(login_url))
+        time.sleep(3) # wait 3 seconds for jscript to complete
+        input_tags = self.driver.find_elements_by_xpath("//input")
+        input_tags[0].send_keys(username)
+        input_tags[1].send_keys(password)
+        button_tags = self.driver.find_elements_by_xpath("//button")
+        button_tags[0].click()
+        time.sleep(3) # wait 3 seconds for jscript to complete
         if self.driver.current_url == local_settings.facility_url():
-            # successful login
             print('successfull login')
         else:
             print('Error logging in')
 
-    def _get_facility_info(self):
+    def _get_system_info(self):
         """ scrape infos from the facility info site """
         print('facility info')
         self.driver.get(local_settings.facility_info_url())
