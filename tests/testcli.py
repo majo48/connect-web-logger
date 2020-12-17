@@ -1,4 +1,5 @@
-""" testcases for the logger app
+"""
+    Testcases for the logger app
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
     functions:
         testRunCLI: test command line interface

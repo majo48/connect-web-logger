@@ -1,11 +1,8 @@
-""" this file contains code for querying the connect-web registered account
-    Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
-    functions:
-        _login(...)
-        _get_infos()
-        _logout()
 """
-from logger import local_settings
+    This file contains code for querying the connect-web registered account
+    Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
+"""
+from logger import local_settings, database
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -142,7 +139,13 @@ class Session:
         """ logout from the connect-web.froeling.com site """
         print('logout')
         self.driver.quit()
+        # persist data to SQLite database
+        db = database.Database()
         for info in self.infos:
-            print(str(info))
+            db.insert_log(info)
 
+
+
+if __name__ == '__main__':
+    print('sorry, this does not run as a standalone')
 
