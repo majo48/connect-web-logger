@@ -26,6 +26,26 @@ class Session:
         finally:
             self._logout()
 
+    def __get_value_pairs(self, driver, page_id):
+        """ get all value pairs from the WebDriver object """
+        keys = driver.find_elements_by_xpath("//div[@class='key']")
+        system_page = page_id == 'System'
+        if system_page:
+            values = driver.find_elements_by_xpath("//div[@class='value']") # proper spelling in html source
+        else:
+            values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
+        idx = 0
+        while idx < len(keys):
+            key = keys[idx].text
+            if system_page and key == 'Last signal at':
+                self.timestamp = self.__set_timestamp(value)
+            value = values[idx].text
+            pair = self.__split_value_unit(value)
+            value = pair['value']
+            tunit = pair['unit']
+            print(page_id + ', ' + key + ', ' + value + ', ' + tunit)
+            idx = idx + 1
+
     def __set_timestamp(self, value):
         """ set timestamp of format yyyy.MM.dd.hh.mm.ss """
         dot = '.'
@@ -36,25 +56,6 @@ class Session:
         min = value[14:16]
         sec = value[17:19]
         return year + dot + mon + dot + day + dot + hour + dot + min + dot + sec
-
-    def __get_value_pairs(self, driver, page_id):
-        """ get all value pairs from the WebDriver object """
-        keys = driver.find_elements_by_xpath("//div[@class='key']")
-        if page_id == 'System':
-            values = driver.find_elements_by_xpath("//div[@class='value']") # proper spelling in html source
-        else:
-            values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            if page_id == 'System' and key == 'Last signal at':
-                self.timestamp = self.__set_timestamp(value)
-            value = values[idx].text
-            pair = self.__split_value_unit(value)
-            value = pair['value']
-            tunit = pair['unit']
-            print(page_id + ', ' + key + ', ' + value + ', ' + tunit)
-            idx = idx + 1
 
     def __split_value_unit(self, value_unit):
         """ properly split values and technical units """
