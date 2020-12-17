@@ -55,17 +55,13 @@ class Session:
         """ properly split values and technical units """
         units = { 'percent': '%', 'degrees': '°C', 'hours': 'h', 'tons': 't', 'kilograms': 'kg' }
         spos = value_unit.rfind(' ')
-        if spos == -1:
-            # does not contain a unit
-            return { 'value': value_unit, 'unit': ''}
-        else:
+        if spos != -1:
             # may contain a technical unit
             u = value_unit[spos+1:]
             v = value_unit[:spos]
             if u in units.values():
                 return { 'value': v, 'unit': u}
-            else:
-                return {'value': value_unit, 'unit': ''}
+        return {'value': value_unit, 'unit': ''}
 
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
