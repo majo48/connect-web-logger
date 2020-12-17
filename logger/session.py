@@ -40,10 +40,15 @@ class Session:
     def __get_value_pairs(self, driver, page_id):
         """ get all value pairs from the WebDriver object """
         keys = driver.find_elements_by_xpath("//div[@class='key']")
-        values = driver.find_elements_by_xpath("//div[@calss='value']") # BEWARE: typo in html source
+        if page_id == 'System':
+            values = driver.find_elements_by_xpath("//div[@class='value']") # proper spelling in html source
+        else:
+            values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
         idx = 0
         while idx < len(keys):
             key = keys[idx].text
+            if page_id == 'System' and key == 'Last signal at':
+                self.timestamp = self.__set_timestamp(value)
             value = values[idx].text
             pair = self.__split_value_unit(value)
             value = pair['value']
@@ -82,19 +87,7 @@ class Session:
         print('facility info')
         self.driver.get(local_settings.facility_info_url())
         time.sleep(3) # wait 3 seconds for jscript to complete
-        keys = self.driver.find_elements_by_xpath("//div[@class='key']")
-        values = self.driver.find_elements_by_xpath("//div[@class='value']") # BEWARE: not a typo
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            value = values[idx].text
-            pair = self.__split_value_unit(value)
-            value = pair['value']
-            tunit = pair['unit']
-            print('System' + ', ' + key + ', ' + value + ', ' + tunit)
-            if key == 'Last signal at':
-                self.timestamp = self.__set_timestamp(value)
-            idx = idx + 1
+        self.__get_value_pairs(self.driver, 'System')
 
     def _get_boiler_info(self):
         """ scrape infos from the boiler info site """
