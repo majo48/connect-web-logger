@@ -17,7 +17,7 @@ def run(username=None, password=None, period_minutes=None):
         print('username: ' + username)
         if password == None:
             password = local_settings.password()
-        print('password: ' + password)
+        print('password: ' + '********')
         if period_minutes == None:
             period_minutes = local_settings.period_minutes()
         print('period_minutes: ' + period_minutes)
