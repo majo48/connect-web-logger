@@ -4,9 +4,7 @@
 """
 from logger import local_settings, database
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
+        import time
 
 
 class Session:
@@ -20,7 +18,7 @@ class Session:
             self._get_tank_info()
             self._get_fead_info()
         except Exception as e:
-            print('Error: ' + str(e))
+            print(self.now() + ' >>> Error: ' + str(e))
         finally:
             self._logout()
 
@@ -83,7 +81,7 @@ class Session:
 
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
-        print('logging in to url: ' + login_url)
+        print(self.now() + ' >>> logging in to url: ' + login_url)
         self.infos = []
         # open login page
         self.driver = webdriver.Firefox()
@@ -96,56 +94,59 @@ class Session:
         button_tags[0].click()
         time.sleep(3) # wait 3 seconds for jscript to complete
         if self.driver.current_url == local_settings.facility_url():
-            print('successfull login')
+            print(self.now() + ' >>> successfull login')
         else:
-            print('Error logging in')
+            print(self.now() + ' >>> Error logging in')
 
     def _get_system_info(self):
         """ scrape infos from the facility info site """
-        print('facility info')
+        print(self.now() + ' >>> system info')
         self.driver.get(local_settings.facility_info_url())
         time.sleep(3) # wait 3 seconds for jscript to complete
         self.__get_value_pairs(self.driver, 'System')
 
     def _get_boiler_info(self):
         """ scrape infos from the boiler info site """
-        print('boiler info')
+        print(self.now() + ' >>> boiler info')
         self.driver.get(local_settings.boiler_info_url())
         time.sleep(3) # wait 3 seconds for jscript to complete
         self.__get_value_pairs(self.driver, 'Boiler')
 
     def _get_heating_info(self):
         """ scrape infos from the heating info site """
-        print('heating circuit 01 info')
+        print(self.now() + ' >>> heating circuit 01 info')
         self.driver.get(local_settings.heating_info_url())
         time.sleep(3) # wait 3 seconds for jscript to complete
         self.__get_value_pairs(self.driver, 'Heating')
 
     def _get_tank_info(self):
         """ scrape infos from the tank info site """
-        print('DHW tank 01 info')
+        print(self.now() + ' >>> DHW tank 01 info')
         self.driver.get(local_settings.tank_info_url())
         time.sleep(3) # wait 3 seconds for jscript to complete
         self.__get_value_pairs(self.driver, 'Tank')
 
     def _get_fead_info(self):
         """ scrape infos from the feed info site """
-        print('feed system info')
+        print(self.now() + ' >>> feed system info')
         self.driver.get(local_settings.feed_info_url())
         time.sleep(3) # wait 3 seconds for jscript to complete
         self.__get_value_pairs(self.driver, 'Feed')
 
     def _logout(self):
         """ logout from the connect-web.froeling.com site """
-        print('logout')
+        print(self.now() + ' >>> logout')
         self.driver.quit()
         # persist data to SQLite database
         db = database.Database()
         for info in self.infos:
             db.insert_log(info)
 
+    def now(self):
+        """ get current time as string """
+        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 
 if __name__ == '__main__':
-    print('sorry, this does not run as a standalone')
+    print('sorry, this module does not run as a standalone.')
 

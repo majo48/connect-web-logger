@@ -6,6 +6,7 @@
 """
 import sys
 from logger import session
+from logger import scheduler
 
 
 def run(username=None, password=None, period_minutes=None):
@@ -14,15 +15,16 @@ def run(username=None, password=None, period_minutes=None):
         from logger import local_settings
         if username == None:
             username = local_settings.username()
-        print('username: ' + username)
         if password == None:
             password = local_settings.password()
-        print('password: ' + '********')
         if period_minutes == None:
             period_minutes = local_settings.period_minutes()
-        print('period_minutes: ' + period_minutes)
-        s = session.Session(local_settings.login_url(), username, password)
-        pass
+        # run the internet query for the first time
+        start_session = session.Session(local_settings.login_url(), username, password)
+        # repeat the intenet query at fixed times (schedule)
+        start_schedule = scheduler.Scheduler(username, password, period_minutes)
+        # run until process (thread) is killed by user
+    #
     except ModuleNotFoundError:
         print('ModuleNotFoundError: please copy local_settings.py.dist to local_settings.py')
 
