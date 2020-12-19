@@ -4,7 +4,7 @@
 """
 from logger import local_settings, database
 from selenium import webdriver
-        import time
+import time
 
 
 class Session:
