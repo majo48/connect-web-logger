@@ -21,6 +21,7 @@ class Database:
                     "customer_id" TEXT NOT NULL,
                     "timestamp"   TEXT NOT NULL,
                     "page_id"     TEXT NOT NULL,
+                    "page_key"    TEXT NOT NULL,
                     "label"       TEXT NOT NULL,
                     "value"       TEXT NOT NULL,
                     "tunit"       TEXT,
@@ -35,8 +36,10 @@ class Database:
 
     def __get_connection(self):
         """ get SQLite connection object """
-        path = os.path.dirname(os.path.realpath(__file__))
-        return sqlite3.connect(path + '/' + 'db.sqlite3')
+        logpath = os.path.dirname(os.path.realpath(__file__))
+        endpath = logpath.split('/')[-1]
+        dbpath = logpath.replace( '/'+endpath, '/database/db.sqilite3')
+        return sqlite3.connect(dbpath)
 
     def insert_log(self, log):
         """ insert one record in the 'logs' table """
@@ -44,8 +47,8 @@ class Database:
         cursor: Cursor = conn.cursor()
         sql = """
             INSERT INTO logs
-            (customer_id, timestamp, page_id, label, value, tunit)
-            VALUES(?,?,?,?,?,?)
+            (customer_id, timestamp, page_id, page_key, label, value, tunit)
+            VALUES(?,?,?,?,?,?,?)
         """
         try:
             cursor.execute(
@@ -53,6 +56,7 @@ class Database:
                     log.get('customer_id'),
                     log.get('timestamp'),
                     log.get('page_id'),
+                    log.get('page_key'),
                     log.get('label'),
                     log.get('value'),
                     log.get('tunit')

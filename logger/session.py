@@ -4,7 +4,7 @@
 """
 from logger import local_settings, database
 from selenium import webdriver
-import time
+import time, os
 
 
 class Session:
@@ -25,18 +25,8 @@ class Session:
     def __get_value_pairs(self, driver, page_id):
         """ get value pairs from the WebDriver object """
         keys = driver.find_elements_by_xpath("//div[@class='key']")
-        system_page = page_id == 'System'
-        if system_page:
+        if page_id == 'System':
             values = driver.find_elements_by_xpath("//div[@class='value']") # proper spelling in html source
-            # first thing: build self.timestamp
-            idx = 0
-            while idx < len(keys):
-                key = keys[idx].text
-                if key == 'Last signal at':
-                    value = values[idx].text
-                    self.timestamp = self.__set_timestamp(value)
-                    break
-                idx += 1 # next key
         else:
             values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
         idx = 0
@@ -46,26 +36,19 @@ class Session:
             pair = self.__split_value_unit(value)
             value = pair['value']
             tunit = pair['unit']
+            page_idx = str(idx+1)
+            if len(page_idx) == 1:
+                page_idx = '0' + page_idx
             self.infos.append({
                 'customer_id': local_settings.customer_id(),
                 'timestamp': self.timestamp,
                 'page_id': page_id,
+                'page_key' : page_id + page_idx,
                 'label': key,
                 'value': value,
                 'tunit': tunit
             })
             idx += 1 # next key
-
-    def __set_timestamp(self, value):
-        """ set timestamp to format YYYY-MM-DD HH:MM:SS.SSS (SQLite text format) """
-        dot = '.'
-        year = value[6:10]
-        mon = value[3:5]
-        day = value[0:2]
-        hour = value[11:13]
-        min = value[14:16]
-        sec = value[17:19]
-        return year + '-' + mon + '-' + day + ' ' + hour + ':' + min + ':' + sec + '.000'
 
     def __split_value_unit(self, value_unit):
         """ properly split values and technical units """
@@ -81,7 +64,8 @@ class Session:
 
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
-        print(self.now() + ' >>> logging in to url: ' + login_url)
+        self.timestamp = self.now()
+        print(self.timestamp + ' >>> logging in to url: ' + login_url)
         self.infos = []
         # open login page
         self.driver = webdriver.Firefox()
@@ -148,5 +132,5 @@ class Session:
 
 
 if __name__ == '__main__':
-    print('sorry, this module does not run as a standalone.')
+    print('So sorry, the ' + os.path.basename(__file__) + ' module does not run as a standalone.')
 
