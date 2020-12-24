@@ -2,7 +2,7 @@
     This file contains code for scheduling querying the connect-web registered account
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
 """
-import schedule
+import schedule, os
 import time
 from logger import session, local_settings
 
@@ -46,3 +46,6 @@ class Scheduler:
         job_session = session.Session(local_settings.login_url(), username, password)
         del job_session
 
+
+if __name__ == '__main__':
+    print('So sorry, the ' + os.path.basename(__file__) + ' module does not run as a standalone.')

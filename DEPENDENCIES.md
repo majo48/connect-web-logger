@@ -10,6 +10,14 @@ This application is built and tested with the following dependencies:
   - urllib (1.26.2): library for selenium
 - ***phantomjs*** (1.3.0): discontinued headless browser used for automating web page interaction
 - ***schedule*** (0.6.0): lightweight scheduler (like cron)
+- ***matplotlib*** (3.3.3): Python standard plotter
+  - Pillow (8.0.1): library for matplotlib
+  - cycler (0.10.0): library for matplotlib
+  - kiwisolver (1.3.1): library for matplotlib
+  - numpy (1.19.4): library for matplotlib
+  - pyparsing (2.4.7): library for matplotlib
+  - python-dateutil (2.8.1): library for matplotlib
+  - six (1.15.0): library for matplotlib
 
 Developed with:
 

@@ -15,6 +15,7 @@ class Database:
         conn: Connection = self.__get_connection()
         cursor: Cursor = conn.cursor()
         try:
+            # create table logs (if it doesn't exist)
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS "logs" (
                     "id"          INTEGER NOT NULL UNIQUE,
@@ -29,6 +30,10 @@ class Database:
                 );
             """)
             conn.commit()
+            # get a list of column offsets
+            logs = cursor.execute("SELECT * FROM logs LIMIT 1")
+            self.log_columns = [tuple[0] for tuple in logs.description]
+            # close database cursor
             conn.close()
         #
         except sqlite3.Error as e:
@@ -68,6 +73,65 @@ class Database:
         except sqlite3.Error as e:
             print("SQLite INSERT person error occurred: " + e.args[0])
 
+    def get_first_timestamp(self):
+        """ get the first (lowest) timestamp in the database """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT timestamp from logs
+            LIMIT 1
+        """
+        try:
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            row = rows[0]
+            return str(row[0])
+        #
+        except sqlite3.Error as e:
+            print("SQLite SELECT error occurred(1): " + e.args[0])
+            return 'n/a'
+
+    def get_timestamps(self, fromDate):
+        """ get all time distinct timestamps after(incl.) fromDate """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT DISTINCT timestamp from logs
+            WHERE timestamp >= '?'
+        """
+        try:
+            sql = sql.replace('?', fromDate)
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            return [x[0] for x in rows] # list of strings
+        #
+        except sqlite3.Error as e:
+            print("SQLite SELECT error occurred(2): " + e.args[0])
+            return '[]'
+
+    def get_rows_with(self, fromDate, colName):
+        """ get all values with colName, after(incl.) afterDate """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT value from logs
+            WHERE timestamp >= '?1'
+            AND page_key = '?2'
+        """
+        try:
+            sql = sql.replace('?1', fromDate)
+            sql = sql.replace('?2', colName)
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            return [int(y[0]) for y in rows] # list of integer values
+        #
+        except sqlite3.Error as e:
+            print("SQLite SELECT error occurred(3): " + e.args[0])
+            return '[]'
+
 
 if __name__ == '__main__':
-    print('sorry, this does not run as a standalone')
+    print('So sorry, the ' + os.path.basename(__file__) + ' module does not run as a standalone.')

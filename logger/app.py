@@ -1,8 +1,8 @@
-""" top-level logger app
+"""
+    top-level logger app
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
     functions:
         run(username, password, period_minutes)
-
 """
 import sys
 from logger import session
