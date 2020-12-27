@@ -11,13 +11,8 @@ from datetime import datetime
 
 class Plotter:
     """ plotter implementation """
-    def __init__(self, from_date):
+    def __init__(self, from_date, plotnames={}, filename='plot.png'):
         """ init plotter """
-        # define which plots
-        ht_plot = {
-            'Boiler02': 'Rauchgas',
-            'Boiler01': 'Boiler'
-        }
         # open database
         db = database.Database()
         # create x axis as numpy datetime objects
@@ -28,10 +23,11 @@ class Plotter:
         x = np.array(xl)
         # create & decorate canvas
         fig, ax = plt.subplots(figsize=(11.6,8.2)) # object oriented IF
-        ax.set_xlabel('Monat-Tag Stunde')
-        ax.set_ylabel('Grad Celcius')
+        ax.set_xlabel('Month-Day Hour')
+        ax.set_ylabel('Degree Celcius')
+        ax.set_title(filename)
         # create plots
-        for key, value in ht_plot.items():
+        for key, value in plotnames.items():
             ylist = db.get_rows_with(from_date, key)
             if len(ylist) == 0:
                 raise Exception('Invalid key('+key+') for getting a plot')
@@ -39,7 +35,7 @@ class Plotter:
             ax.plot(x, y, label=value)
         ax.legend()
         # create output file
-        fig.savefig('plot.png')
+        fig.savefig(filename)
         fig.show()
 
 

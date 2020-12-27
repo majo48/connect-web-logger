@@ -16,7 +16,15 @@ def run(from_date=None):
         if from_date == None:
             from_date = db.get_first_timestamp()
             print('First timestamp: ' + from_date)
-        multilineplotter.Plotter(from_date)
+        multilineplotter.Plotter(
+            from_date,
+            {
+                'Boiler02': 'Flue Gas [°C]',
+                'Boiler01': 'Boiler [°C]',
+                'Tank02': 'DWH pump [%]'
+            },
+            'rauchgas.png'
+        )
     except Exception as err:
         print('Error: ' + str(err))
 
