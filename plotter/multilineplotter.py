@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from logger import database
 from datetime import datetime
-
+import matplotlib.dates as mdates
 
 class Plotter:
     """ plotter implementation """
@@ -29,6 +29,8 @@ class Plotter:
         ax.set_xlabel('Month-Day Hour')
         ax.set_ylabel('Degree Celcius')
         ax.set_title(file)
+        hrs = mdates.HourLocator() # every hour
+        ax.xaxis.set_minor_locator(hrs)
 
         # create lines
         for key, value in lines.items():
