@@ -25,6 +25,19 @@ def run(from_date=None):
             },
             'rauchgas.png'
         )
+        multilineplotter.Plotter(
+            from_date,
+            {
+                'Boiler01': 'Boiler [°C]',
+                'Tank02': 'DWH pump [%]',
+                'Heating01': 'Actual flow [°C]',
+                'Heating02': 'Flow setpoint [°C]',
+                'Heating03': 'Room [°C]',
+                'Heating04': 'Outside [°C]'
+            },
+            'vorlauf.png'
+        )
+
     except Exception as err:
         print('Error: ' + str(err))
 
