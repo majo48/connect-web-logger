@@ -9,6 +9,7 @@ import unittest
 import io
 from contextlib import redirect_stdout
 from logger import app as loggerapp
+from logger import database
 from plotter import app as plotterapp
 
 class TestRunCLI(unittest.TestCase):
@@ -19,8 +20,18 @@ class TestRunCLI(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testRunClilogger(self):
-        """ run scripting part of logger app """
+    def test0database(self):
+        """ test if database has enough contents for plotting (2 snapshots) """
+        db = database.Database()
+        cnt = db.count_logs()
+        self.assertGreater(cnt, 2*47, "Test environment is not clean!")
+
+    def test1RunClilogger(self):
+        """ run scripting part of logger app, approx. 30 secs """
+        db = database.Database()
+        cnt = db.count_logs()
+        if cnt <+ 2*47:
+            self.skipTest("Test environment is not clean!")
         f = io.StringIO()
         with redirect_stdout(f):
             loggerapp.run('unittest')
@@ -28,8 +39,12 @@ class TestRunCLI(unittest.TestCase):
         out = out.splitlines()
         self.assertEqual(len(out), 8) # outputs 8 lines
 
-    def testRunCliPlotter(self):
+    def test2RunCliPlotter(self):
         """ run scripting part of plotter app """
+        db = database.Database()
+        cnt = db.count_logs()
+        if cnt <+ 2*47:
+            self.skipTest("Test environment is not clean!")
         f = io.StringIO()
         with redirect_stdout(f):
             plotterapp.run()
@@ -39,4 +54,4 @@ class TestRunCLI(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(failfast=True)
