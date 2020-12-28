@@ -8,7 +8,8 @@
 import unittest
 import io
 from contextlib import redirect_stdout
-from logger import app
+from logger import app as loggerapp
+from plotter import app as plotterapp
 
 class TestRunCLI(unittest.TestCase):
 
@@ -18,14 +19,23 @@ class TestRunCLI(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testRunCLI(self):
+    def testRunClilogger(self):
         """ run scripting part of logger app """
         f = io.StringIO()
         with redirect_stdout(f):
-            app.run('1','2','3')
+            loggerapp.run('unittest')
         out = f.getvalue()
         out = out.splitlines()
-        self.assertEqual(len(out), 10) # outputs 10 lines
+        self.assertEqual(len(out), 8) # outputs 8 lines
+
+    def testRunCliPlotter(self):
+        """ run scripting part of plotter app """
+        f = io.StringIO()
+        with redirect_stdout(f):
+            plotterapp.run()
+        out = f.getvalue()
+        out = out.splitlines()
+        self.assertEqual(len(out), 4) # outputs 4 lines
 
 
 if __name__ == '__main__':

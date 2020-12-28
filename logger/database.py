@@ -151,6 +151,24 @@ class Database:
         except sqlite3.Error as e:
             print("SQLite INSERT person error occurred: " + e.args[0])
 
+    def count_logs(self):
+        """ return the number of logs in the database """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT count(*) from logs
+        """
+        try:
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            row = rows[0]
+            return row[0]
+        #
+        except sqlite3.Error as e:
+            print("SQLite SELECT error occurred(1): " + e.args[0])
+            return 'n/a'
+
     def get_first_timestamp(self):
         """ get the first (lowest) timestamp in the database """
         conn: Connection = self.__get_connection()
