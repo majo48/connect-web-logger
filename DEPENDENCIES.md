@@ -19,9 +19,13 @@ This application is built and tested with the following dependencies:
   - python-dateutil (2.8.1): library for matplotlib
   - six (1.15.0): library for matplotlib
 
+- The above dependencies are located in a new virtual environment, stored in the project repository folder ***connect-web-logger/venv*** (excluded in .gitignore)
+
+
+- ***FireFox*** (84.0.1, 64-bit): Browser for MacOS 
+  - geckodriver ($ brew install geckodriver)
+
 Developed with:
 
 - ***pycharm*** (Professional 2020.3): Jetbrains Python IDE 
-- dependencies are located in a new virtual environment, stored in the project repository folder ***connect-web-logger/venv*** (excluded in .gitignore)
-- ***FireFox*** (): Browser 
-  - geckodriver ($ brew install geckodriver)
+
