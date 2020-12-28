@@ -1,5 +1,5 @@
 """
-    This file contains code for plotting the SQLite database
+    This file contains code for plotting the database contents
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
 """
 import os, matplotlib
@@ -8,6 +8,7 @@ import numpy as np
 from logger import database
 from datetime import datetime
 import matplotlib.dates as mdates
+
 
 class Plotter:
     """ plotter implementation """
@@ -27,7 +28,7 @@ class Plotter:
         # create & decorate canvas
         fig, ax = plt.subplots(figsize=(11.6,8.2)) # object oriented IF
         ax.set_xlabel('Month-Day Hour')
-        ax.set_ylabel('Degree Celcius')
+        ax.set_ylabel('Degree Celcius / Percent')
         ax.set_title(file)
         hrs = mdates.HourLocator() # every hour
         ax.xaxis.set_minor_locator(hrs)

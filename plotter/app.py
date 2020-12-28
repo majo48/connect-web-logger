@@ -32,10 +32,21 @@ def run(from_date=None):
                 'Tank02': 'DWH pump [%]',
                 'Heating01': 'Actual flow [°C]',
                 'Heating02': 'Flow setpoint [°C]',
+                'Heating07': 'Room setpoint [°C]',
                 'Heating03': 'Room [°C]',
                 'Heating04': 'Outside [°C]'
             },
-            'vorlauf.png'
+             'heizen.png'
+        )
+        multilineplotter.Plotter(
+            from_date,
+            {
+                'Boiler01': 'Boiler [°C]',
+                'Tank02': 'DWH pump [%]',
+                'Tank01': 'DWH tank top [°C]',
+                'Tank03': 'Tank top setpoint [°C]'
+            },
+            'warmwasser.png'
         )
 
     except Exception as err:
