@@ -4,6 +4,7 @@
 """
 from logger import local_settings, database
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 import time, os
 
 
@@ -68,9 +69,15 @@ class Session:
         print(self.timestamp + ' >>> logging in to url: ' + login_url)
         self.infos = []
         # open login page
-        self.driver = webdriver.Firefox()
+        if local_settings.logger_visible_GUI():
+            self.driver = webdriver.Firefox()
+        else: # False = invisible or no GUI available
+            options = Options()
+            options.headless = True
+            self.driver = webdriver.Firefox(options=options)
         self.driver.get(login_url)
-        time.sleep(3) # wait 3 seconds for jscript to complete
+        time.sleep(3)
+        # wait 3 seconds for jscript to complete
         input_tags = self.driver.find_elements_by_xpath("//input")
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)

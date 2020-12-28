@@ -23,5 +23,5 @@ Developed with:
 
 - ***pycharm*** (Professional 2020.3): Jetbrains Python IDE 
 - dependencies are located in a new virtual environment, stored in the project repository folder ***connect-web-logger/venv*** (excluded in .gitignore)
-- exceptions for MacOS: 
-  - also install geckodriver ($ brew install geckodriver)
+- ***FireFox*** (): Browser 
+  - geckodriver ($ brew install geckodriver)

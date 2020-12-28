@@ -34,6 +34,14 @@ def period_minutes():
     return '0'
 
 
+def logger_visible_GUI():
+    """ shall the logger browser session be visible on the users GUI (screen)?
+        Note:
+            If the script is running on a server (w.o. GUI), you must set this to False.
+    """
+    return False
+
+
 def login_url():
     """ URL of the connect-web site  """
     return 'https://connect-web.froeling.com/#/login'
