@@ -35,6 +35,10 @@ class Scheduler:
         while 1:
             schedule.run_pending()
             time.sleep(1)
+            dt = self.now()
+            if dt.endswith(':00'):
+                nxt = schedule.next_run()
+                print(dt + " >>> next job runs at " + nxt.strftime("%Y-%m-%d %H:%M:%S"))
 
     def now(self):
         """ get current time as string """
