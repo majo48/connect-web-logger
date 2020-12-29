@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
     top-level logger app
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
@@ -27,9 +28,9 @@ def run(username=None, password=None, period_minutes=None):
             if period_minutes == None:
                 period_minutes = local_settings.period_minutes()
             # run the internet query for the first time
-            start_session = session.Session(local_settings.login_url(), username, password)
+            session.Session(local_settings.login_url(), username, password)
             # repeat the intenet query at fixed times (schedule)
-            start_schedule = scheduler.Scheduler(username, password, period_minutes)
+            scheduler.Scheduler(username, password, period_minutes)
             # run until process (thread) is killed by user
     #
     except ModuleNotFoundError:

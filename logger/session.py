@@ -5,7 +5,7 @@
 from logger import local_settings, database
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-import time, os
+import time, os, traceback
 
 
 class Session:
@@ -20,6 +20,7 @@ class Session:
             self._get_fead_info()
         except Exception as e:
             print(self.now() + ' >>> Error: ' + str(e))
+            traceback.print_exc()
         finally:
             self._logout()
 

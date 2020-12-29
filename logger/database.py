@@ -2,7 +2,7 @@
     This file contains code for querying the SQLite database
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
 """
-import os
+import os, traceback
 import sqlite3
 from sqlite3.dbapi2 import Connection, Cursor
 
@@ -54,6 +54,7 @@ class Database:
         #
         except sqlite3.Error as e:
             print("SQLite CREATE TABLE error occurred:" + e.args[0])
+            traceback.print_exc()
 
     def __get_connection(self):
         """ get SQLite connection object """
