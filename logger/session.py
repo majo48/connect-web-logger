@@ -10,6 +10,8 @@ import time, os, traceback
 
 class Session:
     """ login to a HTML session, scrape key: value pairs from website and logout """
+    MAXTRY = 10
+
     def __init__(self, login_url, username, password):
         try:
             self._login(login_url, username, password)
@@ -77,52 +79,119 @@ class Session:
             options.headless = True
             self.driver = webdriver.Firefox(options=options)
         self.driver.get(login_url)
-        time.sleep(3)
-        # wait 3 seconds for jscript to complete
-        input_tags = self.driver.find_elements_by_xpath("//input")
+        # wait for response
+        count = 1
+        while count <= self.MAXTRY:
+            input_tags = self.driver.find_elements_by_xpath("//input")
+            if len(input_tags) >= 2:
+                break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception('The browser timed out (login), bad connection?')
+        #
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)
         button_tags = self.driver.find_elements_by_xpath("//button")
         button_tags[0].click()
-        time.sleep(3) # wait 3 seconds for jscript to complete
-        if self.driver.current_url == local_settings.facility_url():
-            print(self.now() + ' >>> successfull login')
+        # wait for response after login
+        count = 1
+        while count <= self.MAXTRY:
+            url = self.driver.current_url
+            if url == local_settings.facility_url():
+                break
+            time.sleep(1)
+            count += 1
         else:
-            print(self.now() + ' >>> Error logging in')
+            raise Exception('The browser timed out (first page), bad connection?')
+        print(self.now() + ' >>> successfull login')
 
     def _get_system_info(self):
         """ scrape infos from the facility info site """
         print(self.now() + ' >>> system info')
         self.driver.get(local_settings.facility_info_url())
-        time.sleep(3) # wait 3 seconds for jscript to complete
+        # wait for response
+        count = 1
+        while count <= self.MAXTRY:
+            get_tags = self.driver.find_elements_by_tag_name("froeling-facility-detail-container")
+            if len(get_tags) == 1:
+                break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception('The browser timed out (facility information page), bad connection?')
         self.__get_value_pairs(self.driver, 'System')
 
     def _get_boiler_info(self):
         """ scrape infos from the boiler info site """
         print(self.now() + ' >>> boiler info')
         self.driver.get(local_settings.boiler_info_url())
-        time.sleep(3) # wait 3 seconds for jscript to complete
+        # wait for response
+        count = 1
+        while count <= self.MAXTRY:
+            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            if len(get_tags) == 1:
+                element = get_tags[0].text
+                if element.startswith('Boiler'):
+                    break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception('The browser timed out (boiler information page), bad connection?')
         self.__get_value_pairs(self.driver, 'Boiler')
 
     def _get_heating_info(self):
         """ scrape infos from the heating info site """
         print(self.now() + ' >>> heating circuit 01 info')
         self.driver.get(local_settings.heating_info_url())
-        time.sleep(3) # wait 3 seconds for jscript to complete
+        # wait for response
+        count = 1
+        while count <= self.MAXTRY:
+            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            if len(get_tags) == 1:
+                element = get_tags[0].text
+                if element.startswith('Heating'):
+                    break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception('The browser timed out (heating information page), bad connection?')
         self.__get_value_pairs(self.driver, 'Heating')
 
     def _get_tank_info(self):
         """ scrape infos from the tank info site """
         print(self.now() + ' >>> DHW tank 01 info')
         self.driver.get(local_settings.tank_info_url())
-        time.sleep(3) # wait 3 seconds for jscript to complete
+        # wait for response
+        count = 1
+        while count <= self.MAXTRY:
+            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            if len(get_tags) == 1:
+                element = get_tags[0].text
+                if element.startswith('DHW'):
+                    break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception('The browser timed out (DWH tank information page), bad connection?')
         self.__get_value_pairs(self.driver, 'Tank')
 
     def _get_fead_info(self):
         """ scrape infos from the feed info site """
         print(self.now() + ' >>> feed system info')
         self.driver.get(local_settings.feed_info_url())
-        time.sleep(3) # wait 3 seconds for jscript to complete
+        # wait for response
+        count = 1
+        while count <= self.MAXTRY:
+            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            if len(get_tags) == 1:
+                element = get_tags[0].text
+                if element.startswith('Feed'):
+                    break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception('The browser timed out (Feed information page), bad connection?')
         self.__get_value_pairs(self.driver, 'Feed')
 
     def _logout(self):
