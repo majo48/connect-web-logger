@@ -31,7 +31,7 @@ def customer_id():
 
 def period_minutes():
     """ period (in minutes: {15,30,60}) for polling the above registered account """
-    return '0'
+    return '15'
 
 
 def logger_visible_GUI():
