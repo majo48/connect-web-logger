@@ -173,7 +173,7 @@ class Session:
             time.sleep(1)
             count += 1
         else:
-            raise Exception('The browser timed out (DWH tank information page), bad connection?')
+            raise Exception('The browser timed out (DHW tank information page), bad connection?')
         self.__get_value_pairs(self.driver, 'Tank')
 
     def _get_fead_info(self):
