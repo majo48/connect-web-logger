@@ -60,7 +60,7 @@ class Database:
         """ get SQLite connection object """
         logpath = os.path.dirname(os.path.realpath(__file__))
         endpath = logpath.split('/')[-1]
-        dbpath = logpath.replace( '/'+endpath, '/database/db.sqilite3')
+        dbpath = logpath.replace( '/'+endpath, '/database/db.sqlite3')
         return sqlite3.connect(dbpath)
 
     def __fill_attrs(self):
