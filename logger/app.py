@@ -28,7 +28,7 @@ def run(username=None, password=None, period_minutes=None):
             if period_minutes == None:
                 period_minutes = local_settings.period_minutes()
             # run the internet query for the first time
-            session.Session(local_settings.login_url(), username, password)
+            job = session.Session(local_settings.login_url(), username, password)
             # repeat the intenet query at fixed times (schedule)
             scheduler.Scheduler(username, password, period_minutes)
             # run until process (thread) is killed by user

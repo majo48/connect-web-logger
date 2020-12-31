@@ -13,6 +13,8 @@ class Session:
     MAXTRY = 10
 
     def __init__(self, login_url, username, password):
+        """ initialize a logging session with connect-web """
+        self._success = False
         try:
             self._login(login_url, username, password)
             self._get_system_info()
@@ -20,11 +22,18 @@ class Session:
             self._get_heating_info()
             self._get_tank_info()
             self._get_fead_info()
-        except Exception as e:
-            print(self.now() + ' >>> Error: ' + str(e))
-            traceback.print_exc()
-        finally:
             self._logout()
+            self._success = True
+        except Exception as e:
+            etype = type(e).__name__
+            print(self.now() + ' >>> Error(' + etype + '), ' + str(e))
+            # traceback.print_exc()
+        finally:
+            pass
+
+    def is_successfull(self):
+        """ True if the session (login .. logout) was successfull """
+        return self._success
 
     def __get_value_pairs(self, driver, page_id):
         """ get value pairs from the WebDriver object """

@@ -29,26 +29,37 @@ class Scheduler:
                 self.jobtimes.append( hour + ':' + minute )
         # setup job schedules
         for jobtime in self.jobtimes:
-            schedule.every().day.at(jobtime).do(self.job, jobtime, username, password)
+            schedule.every().day.at(jobtime).do(self._job, jobtime, username, password)
         # run job schedules
-        print(self.now() + ' >>> run jobs scheduled '+str(self.jobtimes))
+        print(self._now() + ' >>> run jobs scheduled ' + str(self.jobtimes))
         while 1:
             schedule.run_pending()
             time.sleep(1)
-            dt = self.now()
+            dt = self._now()
             if dt.endswith(':00'):
                 nxt = schedule.next_run()
                 print(dt + " >>> next job runs at " + nxt.strftime("%Y-%m-%d %H:%M:%S"))
 
-    def now(self):
+    def _now(self):
         """ get current time as string """
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-    def job(self, jobtime, username, password):
-        """ query the connect-web.froeling.com pages once """
-        print( self.now() + ' >>> run job ' + jobtime )
-        job_session = session.Session(local_settings.login_url(), username, password)
-        del job_session
+    def _job(self, jobtime, username, password):
+        """ query the connect-web.froeling.com pages once, max 3 tries """
+        print(self._now() + ' >>> run job ' + jobtime)
+        retry_counter = 1
+        while retry_counter <= 3:
+            job = session.Session(local_settings.login_url(), username, password)
+            if job.is_successfull():
+                del job
+                break
+            del job
+            time.sleep(1)
+            retry_counter += 1
+            print(self._now() + " >>> retry job " + jobtime)
+        else:
+            print(self._now() + " >>> max. retries exceeded, skipped job " + jobtime)
+        pass
 
 
 if __name__ == '__main__':
