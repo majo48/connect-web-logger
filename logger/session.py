@@ -35,6 +35,23 @@ class Session:
         """ True if the session (login .. logout) was successfull """
         return self._success
 
+    def __wait_for_component(self, component_name):
+        """ wait for component_name response """
+        count = 1
+        while count <= self.MAXTRY:
+            get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            if len(get_component_tags) == 1:
+                element = get_component_tags[0].text
+                if element.startswith(component_name):
+                    break
+            time.sleep(1)
+            count += 1
+        else:
+            raise Exception(
+                'The browser timed out (' + component_name +
+                ' information page), bad connection?'
+            )
+
     def __get_value_pairs(self, driver, page_id):
         """ get value pairs from the WebDriver object """
         keys = driver.find_elements_by_xpath("//div[@class='key']")
@@ -132,75 +149,31 @@ class Session:
         self.__get_value_pairs(self.driver, 'System')
 
     def _get_boiler_info(self):
-        """ scrape infos from the boiler info site """
+        """ scrape infos from the components->boiler info site """
         print(self.now() + ' >>> boiler info')
         self.driver.get(local_settings.boiler_info_url())
-        # wait for response
-        count = 1
-        while count <= self.MAXTRY:
-            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
-            if len(get_tags) == 1:
-                element = get_tags[0].text
-                if element.startswith('Boiler'):
-                    break
-            time.sleep(1)
-            count += 1
-        else:
-            raise Exception('The browser timed out (boiler information page), bad connection?')
+        self.__wait_for_component('Boiler')
         self.__get_value_pairs(self.driver, 'Boiler')
 
     def _get_heating_info(self):
-        """ scrape infos from the heating info site """
+        """ scrape infos from the components->heating info site """
         print(self.now() + ' >>> heating circuit 01 info')
         self.driver.get(local_settings.heating_info_url())
-        # wait for response
-        count = 1
-        while count <= self.MAXTRY:
-            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
-            if len(get_tags) == 1:
-                element = get_tags[0].text
-                if element.startswith('Heating'):
-                    break
-            time.sleep(1)
-            count += 1
-        else:
-            raise Exception('The browser timed out (heating information page), bad connection?')
+        self.__wait_for_component('Heating')
         self.__get_value_pairs(self.driver, 'Heating')
 
     def _get_tank_info(self):
-        """ scrape infos from the tank info site """
+        """ scrape infos from the components->tank info site """
         print(self.now() + ' >>> DHW tank 01 info')
         self.driver.get(local_settings.tank_info_url())
-        # wait for response
-        count = 1
-        while count <= self.MAXTRY:
-            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
-            if len(get_tags) == 1:
-                element = get_tags[0].text
-                if element.startswith('DHW'):
-                    break
-            time.sleep(1)
-            count += 1
-        else:
-            raise Exception('The browser timed out (DHW tank information page), bad connection?')
+        self.__wait_for_component('DHW')
         self.__get_value_pairs(self.driver, 'Tank')
 
     def _get_fead_info(self):
-        """ scrape infos from the feed info site """
+        """ scrape infos from the components->feed info site """
         print(self.now() + ' >>> feed system info')
         self.driver.get(local_settings.feed_info_url())
-        # wait for response
-        count = 1
-        while count <= self.MAXTRY:
-            get_tags = self.driver.find_elements_by_tag_name("mat-card-title")
-            if len(get_tags) == 1:
-                element = get_tags[0].text
-                if element.startswith('Feed'):
-                    break
-            time.sleep(1)
-            count += 1
-        else:
-            raise Exception('The browser timed out (Feed information page), bad connection?')
+        self.__wait_for_component('Feed')
         self.__get_value_pairs(self.driver, 'Feed')
 
     def _logout(self):
