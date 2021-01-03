@@ -40,11 +40,11 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            time.sleep(1)
             if len(get_component_tags) == 1:
                 element = get_component_tags[0].text
                 if element.startswith(component_name):
                     break
-            time.sleep(1)
             count += 1
         else:
             raise Exception(
@@ -108,25 +108,29 @@ class Session:
         # wait for response
         count = 1
         while count <= self.MAXTRY:
-            input_tags = self.driver.find_elements_by_xpath("//input")
-            if len(input_tags) >= 2:
-                break
             time.sleep(1)
+            input_tags = self.driver.find_elements_by_tag_name("input")
+            button_tags = self.driver.find_elements_by_tag_name("button")
+            if len(input_tags) >= 2 and len(button_tags) >= 1:
+                break
             count += 1
         else:
-            raise Exception('The browser timed out (login), bad connection?')
-        #
+            dt = self.timestamp.replace(' ', 'T')
+            self.driver.save_screenshot('save' + dt + 'screenhot.png')
+            with open('save'+dt+'webpage.html', 'w') as f:
+                f.write(self.driver.page_source)
+            raise Exception('The browser timed out (login), bad connection @ ' + login_url)
+        # fill out form
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)
-        button_tags = self.driver.find_elements_by_xpath("//button")
         button_tags[0].click()
         # wait for response after login
         count = 1
         while count <= self.MAXTRY:
+            time.sleep(1)
             url = self.driver.current_url
             if url == local_settings.facility_url():
                 break
-            time.sleep(1)
             count += 1
         else:
             raise Exception('The browser timed out (first page), bad connection?')
@@ -139,10 +143,10 @@ class Session:
         # wait for response
         count = 1
         while count <= self.MAXTRY:
+            time.sleep(1)
             get_tags = self.driver.find_elements_by_tag_name("froeling-facility-detail-container")
             if len(get_tags) == 1:
                 break
-            time.sleep(1)
             count += 1
         else:
             raise Exception('The browser timed out (facility information page), bad connection?')
