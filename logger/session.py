@@ -36,7 +36,7 @@ class Session:
         return self._success
 
     def __wait_for_component(self, component_name):
-        """ wait for component_name response """
+        """ wait-check for component_name response """
         count = 1
         while count <= self.MAXTRY:
             get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
@@ -105,7 +105,8 @@ class Session:
             options.headless = True
             self.driver = webdriver.Firefox(options=options)
         self.driver.get(login_url)
-        # wait for response
+        time.sleep(9) # do absolutely nothing for the first 10 seconds
+        # wait-check for response
         count = 1
         while count <= self.MAXTRY:
             time.sleep(1)
@@ -124,7 +125,7 @@ class Session:
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)
         button_tags[0].click()
-        # wait for response after login
+        # wait-check for response after login
         count = 1
         while count <= self.MAXTRY:
             time.sleep(1)
