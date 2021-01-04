@@ -101,14 +101,18 @@ class Session:
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
         self.timestamp = self.now()
-        print(self.timestamp + ' >>> logging in to url: ' + login_url)
+        print(self.timestamp + ' >>> login in to url: ' + login_url)
         self.infos = []
         # start webdriver service
+        xtime = time.time()
         options = Options()
         options.headless = not local_settings.logger_visible_GUI()
         self.driver = webdriver.Chrome(options=options) # use default path
+        print(self.timestamp + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
         # open login page
+        xtime = time.time()
         self.driver.get(login_url)
+        print(self.timestamp + ' >>> loaded login page in ' + str(round(time.time() - xtime, 3)) + 'secs.')
         time.sleep(4) # do absolutely nothing for the first 5 seconds
         # wait-check for response
         count = 1
