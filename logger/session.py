@@ -1,10 +1,16 @@
 """
     This file contains code for querying the connect-web registered account
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
+
+    This module uses the Google Chrome webdriver, Firefox (geckodriver) is buggy and slow.
+    Follow the instructions provided in https://sites.google.com/a/chromium.org/chromedriver/home
+    The current implementation in MacBook is /usr/local/bin/chromedriver --version
+    ChromeDriver 87.0.4280.88 (89e2380a3e36c3464b5dd1302349b1382549290d-refs/branch-heads/4280@{#1761})
+
 """
 from logger import local_settings, database
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 import time, os, traceback
 
 
@@ -97,15 +103,13 @@ class Session:
         self.timestamp = self.now()
         print(self.timestamp + ' >>> logging in to url: ' + login_url)
         self.infos = []
+        # start webdriver service
+        options = Options()
+        options.headless = not local_settings.logger_visible_GUI()
+        self.driver = webdriver.Chrome(options=options) # use default path
         # open login page
-        if local_settings.logger_visible_GUI():
-            self.driver = webdriver.Firefox()
-        else: # False = invisible or no GUI available
-            options = Options()
-            options.headless = True
-            self.driver = webdriver.Firefox(options=options)
         self.driver.get(login_url)
-        time.sleep(9) # do absolutely nothing for the first 10 seconds
+        time.sleep(4) # do absolutely nothing for the first 5 seconds
         # wait-check for response
         count = 1
         while count <= self.MAXTRY:
@@ -121,7 +125,7 @@ class Session:
             with open('save'+dt+'webpage.html', 'w') as f:
                 f.write(self.driver.page_source)
             raise Exception('The browser timed out (login), bad connection @ ' + login_url)
-        # fill out form
+        # fill out login form
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)
         button_tags[0].click()
