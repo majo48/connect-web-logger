@@ -13,6 +13,7 @@ def run():
     driver.get(url)
     time.sleep(1)
     print('Title: ' + driver.title)
+    driver.quit()
 
 
 if __name__ == '__main__':
