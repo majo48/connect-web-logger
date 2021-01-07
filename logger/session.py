@@ -10,8 +10,7 @@
 """
 from logger import local_settings, database
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import time, os, traceback
+import time, os, db.sqlite3
 
 
 class Session:
@@ -33,7 +32,7 @@ class Session:
         except Exception as e:
             etype = type(e).__name__
             print(self.now() + ' >>> Error(' + etype + '), ' + str(e))
-            # traceback.print_exc()
+            traceback.print_exc()
         finally:
             pass
 
@@ -105,9 +104,7 @@ class Session:
         self.infos = []
         # start webdriver service
         xtime = time.time()
-        options = Options()
-        options.headless = not local_settings.logger_visible_GUI()
-        self.driver = webdriver.Chrome(options=options) # use default path
+        self.driver = webdriver.Chrome()
         print(self.timestamp + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
         # open login page
         xtime = time.time()

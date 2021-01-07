@@ -4,7 +4,7 @@
     functions:
         run(fromDate)
 """
-import sys
+import sys, traceback
 from logger import database
 from plotter import multilineplotter
 
@@ -54,6 +54,7 @@ def run(from_date=None):
 
     except Exception as err:
         print('Error: ' + str(err))
+        traceback.print_exc()
 
 
 if __name__ == '__main__':
