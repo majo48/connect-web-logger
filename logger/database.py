@@ -125,6 +125,13 @@ class Database:
         except sqlite3.Error as e:
             print("SQLite INSERT person error occurred: " + e.args[0])
 
+    def _str2int(self, str):
+        """ convert string to integer """
+        try:
+            return int(str)
+        except:
+            return None
+
     def insert_log(self, log):
         """ insert one record in the 'logs' table """
         conn: Connection = self.__get_connection()
@@ -223,7 +230,7 @@ class Database:
             cursor.execute( sql )
             rows = cursor.fetchall()
             conn.close()
-            return [int(y[0]) for y in rows] # list of integer values
+            return [self._str2int(y[0]) for y in rows] # list of integer values (or None)
         #
         except sqlite3.Error as e:
             print("SQLite SELECT error occurred(3): " + e.args[0])
