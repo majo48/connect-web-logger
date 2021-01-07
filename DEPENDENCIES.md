@@ -21,7 +21,11 @@ This application is built and tested with the following dependencies:
 
 - The above dependencies are located in a new virtual environment, stored in the project repository folder ***connect-web-logger/venv*** (excluded in .gitignore)
 
+- ***Chrome*** (87.0.4270.88): Browser for MacOS
+  - chromedriver (OSX: download, unzip, terminal: mv <path>/chromedriver /usr/local/bin/chromedriver)
+  - chromedriver.exe (Windows: download, unzip, move to: C:\WebDriver\bin\chromedriver.exe)
 
+- Alternative (works too, change code in session.py):
 - ***FireFox*** (84.0.1, 64-bit): Browser for MacOS 
   - geckodriver ($ brew install geckodriver)
 

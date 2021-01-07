@@ -10,7 +10,10 @@
 """
 from logger import local_settings, database
 from selenium import webdriver
-import time, os, db.sqlite3
+from sys import platform
+import time
+import os
+import traceback
 
 
 class Session:
@@ -104,7 +107,11 @@ class Session:
         self.infos = []
         # start webdriver service
         xtime = time.time()
-        self.driver = webdriver.Chrome()
+        if platform == "win32":
+            cdpath = 'C:/WebDriver/bin/chromedriver.exe'
+        else:  # OSX and LInux
+            cdpath = '/usr/local/bin/chromedriver'
+        self.driver = webdriver.Chrome(executable_path=cdpath)
         print(self.timestamp + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
         # open login page
         xtime = time.time()
