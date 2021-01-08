@@ -180,7 +180,7 @@ class Database:
             return row[0]
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(1): " + e.args[0])
+            print("SQLite SELECT error occurred(count_logs): " + e.args[0])
             return 'n/a'
 
     def get_first_timestamp(self):
@@ -199,47 +199,71 @@ class Database:
             return str(row[0])
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(1): " + e.args[0])
+            print("SQLite SELECT error occurred(get_first_timestamp): " + e.args[0])
             return 'n/a'
 
-    def get_timestamps(self, fromDate):
-        """ get all time distinct timestamps after(incl.) fromDate """
+    def get_last_timestamp(self):
+        """ get the last (hoghest) timestamp in the database """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT timestamp from logs
+            ORDER BY timestamp DESC
+            LIMIT 1
+        """
+        try:
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            row = rows[0]
+            return str(row[0])
+        #
+        except sqlite3.Error as e:
+            print("SQLite SELECT error occurred(get_last_timestamp): " + e.args[0])
+            return 'n/a'
+
+    def get_timestamps(self, fromDate, toDate):
+        """ get all time distinct timestamps after(incl.) fromDate until toDate(incl.) """
         conn: Connection = self.__get_connection()
         cursor: Cursor = conn.cursor()
         sql = """
             SELECT DISTINCT timestamp from logs
-            WHERE timestamp >= '?'
+            WHERE timestamp >= '?1'
+            AND timestamp <= '?2'
         """
         try:
-            sql = sql.replace('?', fromDate)
+            sql = sql.replace('?1', fromDate)
+            sql = sql.replace('?2', toDate)
             cursor.execute( sql )
             rows = cursor.fetchall()
             conn.close()
             return [x[0] for x in rows] # list of strings
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(2): " + e.args[0])
+            print("SQLite SELECT error occurred(get_timestamps): " + e.args[0])
             return '[]'
 
-    def get_rows_with(self, fromDate, colName):
-        """ get all values with colName, after(incl.) afterDate """
+    def get_rows_with(self, fromDate, toDate, colName):
+        """ get all values with colName, after(incl.) fromDate until toDate(incl.) """
         conn: Connection = self.__get_connection()
         cursor: Cursor = conn.cursor()
         sql = """
             SELECT value from logs
             WHERE timestamp >= '?1'
-            AND page_key = '?2'
+            AND timestamp <= '?2'
+            AND page_key = '?3'
         """
         try:
             sql = sql.replace('?1', fromDate)
-            sql = sql.replace('?2', colName)
+            sql = sql.replace('?2', toDate)
+            sql = sql.replace('?3', colName)
             cursor.execute( sql )
             rows = cursor.fetchall()
             conn.close()
             return [self._str2int(y[0]) for y in rows] # list of integer values (or None)
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(3): " + e.args[0])
+            print("SQLite SELECT error occurred(get_rows_with): " + e.args[0])
             return '[]'
 
 

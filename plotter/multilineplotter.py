@@ -12,14 +12,14 @@ import matplotlib.dates as mdates
 
 class Plotter:
     """ plotter implementation """
-    def __init__(self, from_date, lines={'Boiler02': 'Flue Gas [°C]'}, file='plot.png'):
+    def __init__(self, from_date, to_date, lines={'Boiler02': 'Flue Gas [°C]'}, file='plot.png'):
         """ run plotter once """
 
         # open database
         db = database.Database()
 
         # create x axis as numpy datetime objects
-        xlist = db.get_timestamps(from_date)
+        xlist = db.get_timestamps(from_date, to_date)
         xl = []
         for str in xlist:
             xl.append(datetime.strptime(str, '%Y-%m-%d %H:%M:%S'))
@@ -35,7 +35,7 @@ class Plotter:
 
         # create lines
         for key, value in lines.items():
-            ylist = db.get_rows_with(from_date, key)
+            ylist = db.get_rows_with(from_date, to_date, key)
             if len(ylist) == 0:
                 raise Exception('Invalid key('+key+') for getting a plot')
             y = np.array(ylist)
