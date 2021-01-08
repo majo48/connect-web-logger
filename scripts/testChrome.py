@@ -5,7 +5,7 @@ import time
 
 def run():
     """ test selenium & chrome """
-    print('Test Selenium & Chrom...')
+    print('Test Selenium & Chrome...')
     try:
         # whereami
         if platform == "win32":
