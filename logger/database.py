@@ -2,8 +2,10 @@
     This file contains code for querying the SQLite database
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
 """
-import os, traceback
 import sqlite3
+import os
+import traceback
+from sys import platform
 from sqlite3.dbapi2 import Connection, Cursor
 
 
@@ -59,8 +61,12 @@ class Database:
     def __get_connection(self):
         """ get SQLite connection object """
         logpath = os.path.dirname(os.path.realpath(__file__))
-        endpath = logpath.split('/')[-1]
-        dbpath = logpath.replace( '/'+endpath, '/database/db.sqlite3')
+        if platform == "win32":
+            endpath = logpath.split('\\')[-1]
+            dbpath = logpath.replace('\\' + endpath, '\\database\\db.sqlite3')
+        else:  # OSX and LInux
+            endpath = logpath.split('/')[-1]
+            dbpath = logpath.replace('/' + endpath, '/database/db.sqlite3')
         return sqlite3.connect(dbpath)
 
     def __fill_attrs(self):
