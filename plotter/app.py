@@ -28,7 +28,7 @@ def run(from_date=None, to_date=None):
                 {
                     'Boiler02': 'Flue Gas [°C]',
                     'Boiler01': 'Boiler [°C]',
-                    'Tank02': 'DWH pump [%]'
+                    'Tank02': 'DHW pump [%]'
                 },
                 'rauchgas.png'
             )
@@ -50,8 +50,8 @@ def run(from_date=None, to_date=None):
                 to_date,
                 {
                     'Boiler01': 'Boiler [°C]',
-                    'Tank02': 'DWH pump [%]',
-                    'Tank01': 'DWH tank top [°C]',
+                    'Tank02': 'DHW pump [%]',
+                    'Tank01': 'DHW tank top [°C]',
                     'Tank03': 'Tank top setpoint [°C]'
                 },
                 'warmwasser.png'
