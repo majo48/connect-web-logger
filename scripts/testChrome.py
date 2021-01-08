@@ -22,6 +22,7 @@ def run():
     except Exception as e:
         print('Exception: ' + e.args[0])
 
+
 if __name__ == '__main__':
     run() # prints to console
     # Test selenium & firefox...

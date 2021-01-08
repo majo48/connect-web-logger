@@ -37,7 +37,7 @@ class TestRunCLI(unittest.TestCase):
             loggerapp.run('unittest')
         out = f.getvalue()
         out = out.splitlines()
-        self.assertEqual(len(out), 8) # outputs 8 lines
+        self.assertEqual(len(out), 10) # outputs 10 lines
 
     def test2RunCliPlotter(self):
         """ run scripting part of plotter app """

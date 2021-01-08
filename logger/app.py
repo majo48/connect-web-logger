@@ -15,7 +15,7 @@ def run(username=None, password=None, period_minutes=None):
     try:
         from logger import local_settings
         if username == 'unittest':
-            start_session = session.Session(
+            job = session.Session(
                 local_settings.login_url(),
                 local_settings.username(),
                 local_settings.password()
