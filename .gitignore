@@ -130,3 +130,6 @@ dmypy.json
 
 # connect-web-logger docs
 .pages
+/docs/UbuntuInstallation.pages
+/docs/UbuntuRun.pages
+/docs/Windows-connect-web-logger.pages
