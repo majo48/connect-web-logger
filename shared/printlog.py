@@ -26,7 +26,7 @@ class PrintLog:
 
     def print(self, txt):
         """ print text to stdout and to one line in a logfile """
-        if local_settings.is_verbose() == True:
+        if local_settings.is_verbose():
             print(txt)
         with open(self.logfile, "a") as f:
             f.write(txt + "\n")
