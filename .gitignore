@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # connect-web-logger docs
-.pages
 /docs/UbuntuInstallation.pages
 /docs/UbuntuRun.pages
 /docs/Windows-connect-web-logger.pages
+/logs/*.png
