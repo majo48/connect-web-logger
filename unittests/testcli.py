@@ -9,7 +9,7 @@ import unittest
 import io
 from contextlib import redirect_stdout
 from logger import app as loggerapp
-from logger import database
+from shared import database
 from plotter import app as plotterapp
 
 class TestRunCLI(unittest.TestCase):

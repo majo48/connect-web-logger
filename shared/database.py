@@ -12,8 +12,9 @@ from sqlite3.dbapi2 import Connection, Cursor
 class Database:
     """ SQLite database for persisting connect-web.froeling,com logging information """
 
-    def __init__(self):
+    def __init__(self, printer):
         """ initialize the SQLite database """
+        self.printer = printer
         conn: Connection = self.__get_connection()
         cursor: Cursor = conn.cursor()
         try:
@@ -55,7 +56,7 @@ class Database:
             conn.close()
         #
         except sqlite3.Error as e:
-            print("SQLite CREATE TABLE error occurred:" + e.args[0])
+            self.printer.print("SQLite CREATE TABLE error occurred:" + e.args[0])
             traceback.print_exc()
 
     def __get_connection(self):
@@ -129,7 +130,7 @@ class Database:
             conn.close()
         #
         except sqlite3.Error as e:
-            print("SQLite INSERT person error occurred: " + e.args[0])
+            self.printer.print("SQLite INSERT person error occurred: " + e.args[0])
 
     def _str2int(self, str):
         """ convert string to integer """
@@ -163,7 +164,7 @@ class Database:
             conn.close()
         #
         except sqlite3.Error as e:
-            print("SQLite INSERT person error occurred: " + e.args[0])
+            self.printer.print("SQLite INSERT person error occurred: " + e.args[0])
 
     def count_logs(self):
         """ return the number of logs in the database """
@@ -180,7 +181,7 @@ class Database:
             return row[0]
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(count_logs): " + e.args[0])
+            self.printer.print("SQLite SELECT error occurred(count_logs): " + e.args[0])
             return 'n/a'
 
     def get_first_timestamp(self):
@@ -199,7 +200,7 @@ class Database:
             return str(row[0])
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(get_first_timestamp): " + e.args[0])
+            self.printer.print("SQLite SELECT error occurred(get_first_timestamp): " + e.args[0])
             return 'n/a'
 
     def get_last_timestamp(self):
@@ -219,7 +220,7 @@ class Database:
             return str(row[0])
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(get_last_timestamp): " + e.args[0])
+            self.printer.print("SQLite SELECT error occurred(get_last_timestamp): " + e.args[0])
             return 'n/a'
 
     def get_timestamps(self, fromDate, toDate):
@@ -240,7 +241,7 @@ class Database:
             return [x[0] for x in rows] # list of strings
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(get_timestamps): " + e.args[0])
+            self.printer.print("SQLite SELECT error occurred(get_timestamps): " + e.args[0])
             return '[]'
 
     def get_rows_with(self, fromDate, toDate, colName):
@@ -263,7 +264,7 @@ class Database:
             return [self._str2int(y[0]) for y in rows] # list of integer values (or None)
         #
         except sqlite3.Error as e:
-            print("SQLite SELECT error occurred(get_rows_with): " + e.args[0])
+            self.printer.print("SQLite SELECT error occurred(get_rows_with): " + e.args[0])
             return '[]'
 
 
