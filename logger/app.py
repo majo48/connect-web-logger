@@ -6,6 +6,8 @@
         run(username, password, period_minutes)
 """
 import sys
+from shared import printlog
+from shared import local_settings
 from logger import session
 from logger import scheduler
 
@@ -13,12 +15,13 @@ from logger import scheduler
 def run(username=None, password=None, period_minutes=None):
     """ argument == 'None' will be replaced with the value from the configuration file """
     try:
-        from logger import local_settings
+        printer = printlog.PrintLog('logger.log')
         if username == 'unittest':
             job = session.Session(
                 local_settings.login_url(),
                 local_settings.username(),
-                local_settings.password()
+                local_settings.password(),
+                printer
             )
         else:
             if username == None:
@@ -28,13 +31,23 @@ def run(username=None, password=None, period_minutes=None):
             if period_minutes == None:
                 period_minutes = local_settings.period_minutes()
             # run the internet query for the first time
-            job = session.Session(local_settings.login_url(), username, password)
+            job = session.Session(
+                local_settings.login_url(),
+                username,
+                password,
+                printer
+            )
             # repeat the intenet query at fixed times (schedule)
-            scheduler.Scheduler(username, password, period_minutes)
+            scheduler.Scheduler(
+                username,
+                password,
+                period_minutes,
+                printer
+            )
             # run until process (thread) is killed by user
     #
     except ModuleNotFoundError:
-        print('ModuleNotFoundError: please copy local_settings.py.dist to local_settings.py')
+        printer.print('ModuleNotFoundError: please copy local_settings.py.dist to local_settings.py')
 
 
 def manage_arguments():

@@ -8,11 +8,12 @@
     ChromeDriver 87.0.4280.88 (89e2380a3e36c3464b5dd1302349b1382549290d-refs/branch-heads/4280@{#1761})
 
 """
-from logger import local_settings, database
+from shared import database, local_settings
 from selenium import webdriver
 from sys import platform
 import time
 import os
+import sys
 import traceback
 
 
@@ -20,9 +21,10 @@ class Session:
     """ login to a HTML session, scrape key: value pairs from website and logout """
     MAXTRY = 10
 
-    def __init__(self, login_url, username, password):
+    def __init__(self, login_url, username, password, printer):
         """ initialize a logging session with connect-web """
         self._success = False
+        self.printer = printer
         try:
             self._login(login_url, username, password)
             self._get_system_info()
@@ -32,10 +34,11 @@ class Session:
             self._get_fead_info()
             self._logout()
             self._success = True
-        except Exception as e:
-            etype = type(e).__name__
-            print(self.now() + ' >>> Error(' + etype + '), ' + str(e))
-            traceback.print_exc()
+        except Exception as exc:
+            ecxtype = type(exc).__name__
+            printer.print(self.now() + ' >>> Error(' + ecxtype + '), ' + str(e))
+            etype, value, tb = sys.exc_info()
+            printer.print(''.join(traceback.format_exception(etype, value, tb)))
         finally:
             pass
 
@@ -103,7 +106,7 @@ class Session:
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
         self.timestamp = self.now()
-        print(self.timestamp + ' >>> login in to url: ' + login_url)
+        self.printer.print(self.timestamp + ' >>> login in to url: ' + login_url)
         self.infos = []
         # start webdriver service
         xtime = time.time()
@@ -112,11 +115,11 @@ class Session:
         else:  # OSX and LInux
             cdpath = '/usr/local/bin/chromedriver'
         self.driver = webdriver.Chrome(executable_path=cdpath)
-        print(self.timestamp + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
+        self.printer.print(self.timestamp + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
         # open login page
         xtime = time.time()
         self.driver.get(login_url)
-        print(self.timestamp + ' >>> loaded login page in ' + str(round(time.time() - xtime, 3)) + 'secs.')
+        self.printer.print(self.timestamp + ' >>> loaded login page in ' + str(round(time.time() - xtime, 3)) + 'secs.')
         time.sleep(4) # do absolutely nothing for the first 5 seconds
         # wait-check for response
         count = 1
@@ -147,11 +150,11 @@ class Session:
             count += 1
         else:
             raise Exception('The browser timed out (first page), bad connection?')
-        print(self.now() + ' >>> successfull login')
+        self.printer.print(self.now() + ' >>> successfull login')
 
     def _get_system_info(self):
         """ scrape infos from the facility info site """
-        print(self.now() + ' >>> system info')
+        self.printer.print(self.now() + ' >>> system info')
         self.driver.get(local_settings.facility_info_url())
         # wait for response
         count = 1
@@ -167,38 +170,38 @@ class Session:
 
     def _get_boiler_info(self):
         """ scrape infos from the components->boiler info site """
-        print(self.now() + ' >>> boiler info')
+        self.printer.print(self.now() + ' >>> boiler info')
         self.driver.get(local_settings.boiler_info_url())
         self.__wait_for_component('Boiler')
         self.__get_value_pairs(self.driver, 'Boiler')
 
     def _get_heating_info(self):
         """ scrape infos from the components->heating info site """
-        print(self.now() + ' >>> heating circuit 01 info')
+        self.printer.print(self.now() + ' >>> heating circuit 01 info')
         self.driver.get(local_settings.heating_info_url())
         self.__wait_for_component('Heating')
         self.__get_value_pairs(self.driver, 'Heating')
 
     def _get_tank_info(self):
         """ scrape infos from the components->tank info site """
-        print(self.now() + ' >>> DHW tank 01 info')
+        self.printer.print(self.now() + ' >>> DHW tank 01 info')
         self.driver.get(local_settings.tank_info_url())
         self.__wait_for_component('DHW')
         self.__get_value_pairs(self.driver, 'Tank')
 
     def _get_fead_info(self):
         """ scrape infos from the components->feed info site """
-        print(self.now() + ' >>> feed system info')
+        self.printer.print(self.now() + ' >>> feed system info')
         self.driver.get(local_settings.feed_info_url())
         self.__wait_for_component('Feed')
         self.__get_value_pairs(self.driver, 'Feed')
 
     def _logout(self):
         """ logout from the connect-web.froeling.com site """
-        print(self.now() + ' >>> logout')
+        self.printer.print(self.now() + ' >>> logout')
         self.driver.quit()
         # persist data to SQLite database
-        db = database.Database()
+        db = database.Database(self.printer)
         for info in self.infos:
             db.insert_log(info)
 

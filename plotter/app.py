@@ -5,23 +5,25 @@
         run(fromDate)
 """
 import sys, traceback
-from logger import database
+from shared import database
 from plotter import multilineplotter
+from shared import printlog
 
 
 def run(from_date=None, to_date=None):
     """ argument from_date may be replaced with the first timestamp from the database """
+    printer = printlog.PrintLog('plotter.log')
     try:
-        db = database.Database()
+        db = database.Database(printer)
         if db.count_logs() == 0:
-            print('Error: no logs in the database')
+            printer.print('Error: no logs in the database')
         else:
             if from_date == None:
                 from_date = db.get_first_timestamp()
-            print('First timestamp: ' + from_date)
+            printer.print('First timestamp: ' + from_date)
             if to_date == None:
                 to_date = db.get_last_timestamp()
-            print('Last timestamp: ' + to_date)
+            printer.print('Last timestamp: ' + to_date)
             multilineplotter.Plotter(
                 from_date,
                 to_date,
@@ -30,7 +32,8 @@ def run(from_date=None, to_date=None):
                     'Boiler01': 'Boiler [°C]',
                     'Tank02': 'DHW pump [%]'
                 },
-                'rauchgas.png'
+                'rauchgas.png',
+                printer
             )
             multilineplotter.Plotter(
                 from_date,
@@ -43,7 +46,8 @@ def run(from_date=None, to_date=None):
                     'Heating03': 'Room [°C]',
                     'Heating04': 'Outside [°C]'
                 },
-                'heizen.png'
+                'heizen.png',
+                printer
             )
             multilineplotter.Plotter(
                 from_date,
@@ -54,11 +58,12 @@ def run(from_date=None, to_date=None):
                     'Tank01': 'DHW tank top [°C]',
                     'Tank03': 'Tank top setpoint [°C]'
                 },
-                'warmwasser.png'
+                'warmwasser.png',
+                printer
             )
 
     except Exception as err:
-        print('Error: ' + str(err))
+        printer.print('Error: ' + str(err))
         traceback.print_exc()
 
 

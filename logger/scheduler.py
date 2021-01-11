@@ -4,14 +4,16 @@
 """
 import schedule, os
 import time
-from logger import session, local_settings
+from logger import session
+from shared import local_settings
 
 
 class Scheduler:
     """ run the periodic querying of connect-web.froeling.com """
 
-    def __init__(self, username, password, period_minutes):
+    def __init__(self, username, password, period_minutes, printer):
         """ initialize class, run forever """
+        self.printer = printer
         minutes = {
             "15": ["00", "15", "30", "45"],
             "30": ["00", "30"],
@@ -31,14 +33,14 @@ class Scheduler:
         for jobtime in self.jobtimes:
             schedule.every().day.at(jobtime).do(self._job, jobtime, username, password)
         # run job schedules
-        print(self._now() + ' >>> run jobs scheduled ' + str(self.jobtimes))
+        self.printer.print(self._now() + ' >>> run jobs scheduled ' + str(self.jobtimes))
         while 1:
             schedule.run_pending()
             time.sleep(1)
             dt = self._now()
             if dt.endswith(':00'):
                 nxt = schedule.next_run()
-                print(dt + " >>> next job runs at " + nxt.strftime("%Y-%m-%d %H:%M:%S"))
+                self.printer.print(dt + " >>> next job runs at " + nxt.strftime("%Y-%m-%d %H:%M:%S"))
 
     def _now(self):
         """ get current time as string """
@@ -46,7 +48,7 @@ class Scheduler:
 
     def _job(self, jobtime, username, password):
         """ query the connect-web.froeling.com pages once, max 3 tries """
-        print(self._now() + ' >>> run job ' + jobtime)
+        self.printer.print(self._now() + ' >>> run job ' + jobtime)
         retry_counter = 1
         while retry_counter <= 3:
             job = session.Session(local_settings.login_url(), username, password)
@@ -56,9 +58,9 @@ class Scheduler:
             del job
             time.sleep(1)
             retry_counter += 1
-            print(self._now() + " >>> retry job " + jobtime)
+            self.printer.print(self._now() + " >>> retry job " + jobtime)
         else:
-            print(self._now() + " >>> max. retries exceeded, skipped job " + jobtime)
+            self.printer.print(self._now() + " >>> max. retries exceeded, skipped job " + jobtime)
         pass
 
 
