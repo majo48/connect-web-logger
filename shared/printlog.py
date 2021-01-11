@@ -6,6 +6,7 @@
 
 import os
 from sys import platform
+from shared import local_settings
 
 
 class PrintLog:
@@ -25,7 +26,8 @@ class PrintLog:
 
     def print(self, txt):
         """ print text to stdout and to one line in a logfile """
-        print(txt)
+        if local_settings.is_verbose() == True:
+            print(txt)
         with open(self.logfile, "a") as f:
             f.write(txt + "\n")
 

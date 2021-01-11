@@ -24,7 +24,7 @@ def customer_id():
     """ customer id is the database index for customer number
         Note:
             Open your personal account and navigate to the System page,
-            the customer_id (DB index, number) is the forth part of the URL
+            the customer id (DB index, number) is the forth part of the URL
     """
     return 'n/a'
 
@@ -34,12 +34,17 @@ def period_minutes():
     return '15'
 
 
-def logger_visible_GUI():
-    """ shall the logger browser session be visible on the users GUI (screen)?
-        Note:
-            If the script is running on a server (w.o. GUI), you must set this to False.
+def is_verbose():
+    """
+        Parameter which defines if output is sent to stdout + logfile (True),
+        else (False) output is sent only to the logfile.
     """
     return False
+
+
+"""
+    The following are urls of the pages which shall be scraped.
+"""
 
 
 def login_url():
@@ -80,3 +85,4 @@ def feed_info_url():
     ''' URL of the feed info page '''
     url = 'https://connect-web.froeling.com/#/facility/?/components/1_906'
     return url.replace('?', customer_id())
+
