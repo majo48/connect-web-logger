@@ -51,7 +51,7 @@ class Scheduler:
         self.printer.print(self._now() + ' >>> run job ' + jobtime)
         retry_counter = 1
         while retry_counter <= 3:
-            job = session.Session(local_settings.login_url(), username, password)
+            job = session.Session(local_settings.login_url(), username, password, self.printer)
             if job.is_successfull():
                 del job
                 break

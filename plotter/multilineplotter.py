@@ -25,8 +25,8 @@ class Plotter:
         # create x axis as numpy datetime objects
         xlist = db.get_timestamps(from_date, to_date)
         xl = []
-        for str in xlist:
-            xl.append(datetime.strptime(str, '%Y-%m-%d %H:%M:%S'))
+        for s in xlist:
+            xl.append(datetime.strptime(s, '%Y-%m-%d %H:%M:%S'))
         x = np.array(xl)
 
         # create & decorate canvas

@@ -22,21 +22,34 @@ class Session:
     MAXTRY = 10
 
     def __init__(self, login_url, username, password, printer):
-        """ initialize a logging session with connect-web """
+        """ initialize a scraping session with connect-web """
         self._success = False
         self.printer = printer
         try:
-            self._login(login_url, username, password)
-            self._get_system_info()
-            self._get_boiler_info()
-            self._get_heating_info()
-            self._get_tank_info()
-            self._get_fead_info()
+            success = self._login(login_url, username, password)
+            if success:
+                success = self._get_system_info()
+            if success:
+                success = self._get_boiler_info()
+            if success:
+                success = self._get_heating_info()
+            if success:
+                success = self._get_tank_info()
+            if success:
+                success = self._get_fead_info()
+            self._success = success
             self._logout()
-            self._success = True
+            if success:
+                # persist infos to SQLite database
+                db = database.Database(self.printer)
+                for page in self.pages:
+                    for info in page:
+                        db.insert_log(info)
+        #
         except Exception as exc:
+            """ manage all and any exceptions in class logger """
             ecxtype = type(exc).__name__
-            printer.print(self.now() + ' >>> Error(' + ecxtype + '), ' + str(e))
+            printer.print(self.now() + ' >>> Error(' + ecxtype + '), ' + str(exc))
             etype, value, tb = sys.exc_info()
             printer.print(''.join(traceback.format_exception(etype, value, tb)))
         finally:
@@ -58,29 +71,51 @@ class Session:
                     break
             count += 1
         else:
-            raise Exception(
-                'The browser timed out (' + component_name +
-                ' information page), bad connection?'
-            )
+            return False # failed
+        return True # success
 
     def __get_value_pairs(self, driver, page_id):
-        """ get value pairs from the WebDriver object """
-        keys = driver.find_elements_by_xpath("//div[@class='key']")
-        if page_id == 'System':
-            values = driver.find_elements_by_xpath("//div[@class='value']") # proper spelling in html source
-        else:
-            values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
+        """
+            get key, value pairs from the WebDriver object
+            delay and retry, if any key or value aren't loaded yet (len()==0)
+        """
+        count = 1
+        while count <= self.MAXTRY:
+            keys = driver.find_elements_by_xpath("//div[@class='key']")
+            if page_id == 'System':
+                values = driver.find_elements_by_xpath("//div[@class='value']")  # proper spelling in html source
+            else:
+                values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
+            pairs, noblanks = self.__join_pairs(keys, values, page_id)
+            if noblanks:
+                return pairs # success
+            else:
+                self.printer.print(self.timestamp + ' >>> Error: retry in page ' + page_id)
+                time.sleep(0.2) # delayed retry
+                count += 1
+        return [] # failed
+
+    def __join_pairs(self, keys, values, page_id):
+        """ join keys, values and units in a list of tuples """
+        pairs = []
+        if len(keys) != len(values):
+            noblanks = False
+            return noblanks, pairs
+        noblanks = True
         idx = 0
         while idx < len(keys):
             key = keys[idx].text
             value = values[idx].text
+            if len(key) == 0 or len(value) == 0:
+                noblanks = False
+                break
             pair = self.__split_value_unit(value)
             value = pair['value']
             tunit = pair['unit']
             page_idx = str(idx+1)
             if len(page_idx) == 1:
                 page_idx = '0' + page_idx
-            self.infos.append({
+            pairs.append({
                 'customer_id': local_settings.customer_id(),
                 'timestamp': self.timestamp,
                 'page_id': page_id,
@@ -89,7 +124,8 @@ class Session:
                 'value': value,
                 'tunit': tunit
             })
-            idx += 1 # next key
+            idx += 1 # next key, value
+        return pairs, noblanks
 
     def __split_value_unit(self, value_unit):
         """ properly split values and technical units """
@@ -107,7 +143,7 @@ class Session:
         """ login to the connect-web.froeling.com site """
         self.timestamp = self.now()
         self.printer.print(self.timestamp + ' >>> login in to url: ' + login_url)
-        self.infos = []
+        self.pages = []
         # start webdriver service
         xtime = time.time()
         if platform == "win32":
@@ -128,14 +164,11 @@ class Session:
             input_tags = self.driver.find_elements_by_tag_name("input")
             button_tags = self.driver.find_elements_by_tag_name("button")
             if len(input_tags) >= 2 and len(button_tags) >= 1:
-                break
+                break # success
             count += 1
         else:
-            dt = self.timestamp.replace(' ', 'T')
-            self.driver.save_screenshot('save' + dt + 'screenhot.png')
-            with open('save'+dt+'webpage.html', 'w') as f:
-                f.write(self.driver.page_source)
-            raise Exception('The browser timed out (login), bad connection @ ' + login_url)
+            self.printer.print(self.timestamp + ' >>> Error: The browser timed out (login) in ' + login_url)
+            return False # failed
         # fill out login form
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)
@@ -146,11 +179,13 @@ class Session:
             time.sleep(1)
             url = self.driver.current_url
             if url == local_settings.facility_url():
-                break
+                break # success
             count += 1
         else:
-            raise Exception('The browser timed out (first page), bad connection?')
+            self.printer.print(self.timestamp + ' >>> Error: The browser timed out (first page).')
+            return False # failed
         self.printer.print(self.now() + ' >>> successfull login')
+        return True # success
 
     def _get_system_info(self):
         """ scrape infos from the facility info site """
@@ -165,45 +200,59 @@ class Session:
                 break
             count += 1
         else:
-            raise Exception('The browser timed out (facility information page), bad connection?')
-        self.__get_value_pairs(self.driver, 'System')
+            return False # failed
+        pairs = self.__get_value_pairs(self.driver, 'System')
+        self.pages.append(pairs)
+        return len(pairs) != 0
 
     def _get_boiler_info(self):
         """ scrape infos from the components->boiler info site """
         self.printer.print(self.now() + ' >>> boiler info')
         self.driver.get(local_settings.boiler_info_url())
-        self.__wait_for_component('Boiler')
-        self.__get_value_pairs(self.driver, 'Boiler')
+        success = self.__wait_for_component('Boiler')
+        if success:
+            pairs = self.__get_value_pairs(self.driver, 'Boiler')
+            self.pages.append(pairs)
+            success = len(pairs) != 0
+        return success
 
     def _get_heating_info(self):
         """ scrape infos from the components->heating info site """
         self.printer.print(self.now() + ' >>> heating circuit 01 info')
         self.driver.get(local_settings.heating_info_url())
-        self.__wait_for_component('Heating')
-        self.__get_value_pairs(self.driver, 'Heating')
+        success = self.__wait_for_component('Heating')
+        if success:
+            pairs = self.__get_value_pairs(self.driver, 'Heating')
+            self.pages.append(pairs)
+            success = len(pairs) != 0
+        return success
 
     def _get_tank_info(self):
         """ scrape infos from the components->tank info site """
         self.printer.print(self.now() + ' >>> DHW tank 01 info')
         self.driver.get(local_settings.tank_info_url())
-        self.__wait_for_component('DHW')
-        self.__get_value_pairs(self.driver, 'Tank')
+        success = self.__wait_for_component('DHW')
+        if success:
+            pairs = self.__get_value_pairs(self.driver, 'Tank')
+            self.pages.append(pairs)
+            success = len(pairs) != 0
+        return success
 
     def _get_fead_info(self):
         """ scrape infos from the components->feed info site """
         self.printer.print(self.now() + ' >>> feed system info')
         self.driver.get(local_settings.feed_info_url())
-        self.__wait_for_component('Feed')
-        self.__get_value_pairs(self.driver, 'Feed')
+        success = self.__wait_for_component('Feed')
+        if success:
+            pairs = self.__get_value_pairs(self.driver, 'Feed')
+            self.pages.append(pairs)
+            success = len(pairs) != 0
+        return success
 
     def _logout(self):
         """ logout from the connect-web.froeling.com site """
         self.printer.print(self.now() + ' >>> logout')
         self.driver.quit()
-        # persist data to SQLite database
-        db = database.Database(self.printer)
-        for info in self.infos:
-            db.insert_log(info)
 
     def now(self):
         """ get current time as string """
