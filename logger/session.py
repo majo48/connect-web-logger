@@ -91,7 +91,7 @@ class Session:
                 return pairs # success
             else:
                 self.printer.print(self.timestamp + ' >>> Error: retry in page ' + page_id)
-                time.sleep(0.2) # delayed retry
+                time.sleep(1) # delayed retry
                 count += 1
         return [] # failed
 
