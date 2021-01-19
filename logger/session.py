@@ -25,6 +25,7 @@ class Session:
         """ initialize a scraping session with connect-web """
         self._success = False
         self.printer = printer
+        self.units = { 'percent': '%', 'degrees': '°C', 'hours': 'h', 'tons': 't', 'kilograms': 'kg' }
         try:
             success = self._login(login_url, username, password)
             if success:
@@ -64,13 +65,15 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
-            time.sleep(1)
             if len(get_component_tags) == 1:
                 element = get_component_tags[0].text
                 if element.startswith(component_name):
                     break
+            self.printer.print(self.timestamp + ' >>> Retry in wait for component')
+            time.sleep(1) # delayed retry
             count += 1
         else:
+            self.printer.print(self.timestamp + ' >>> Error: time out in wait for component ' + component_name)
             return False # failed
         return True # success
 
@@ -90,9 +93,10 @@ class Session:
             if noblanks:
                 return pairs # success
             else:
-                self.printer.print(self.timestamp + ' >>> Error: retry in page ' + page_id)
+                self.printer.print(self.timestamp + ' >>> Retry in get value pairs for ' + page_id)
                 time.sleep(1) # delayed retry
                 count += 1
+        self.printer.print(self.timestamp + ' >>> Error: time out in get value pairs for ' + page_id)
         return [] # failed
 
     def __join_pairs(self, keys, values, page_id):
@@ -129,13 +133,12 @@ class Session:
 
     def __split_value_unit(self, value_unit):
         """ properly split values and technical units """
-        units = { 'percent': '%', 'degrees': '°C', 'hours': 'h', 'tons': 't', 'kilograms': 'kg' }
         spos = value_unit.rfind(' ')
         if spos != -1:
             # may contain a technical unit
             u = value_unit[spos+1:]
             v = value_unit[:spos]
-            if u in units.values():
+            if u in self.units.values():
                 return { 'value': v, 'unit': u}
         return {'value': value_unit, 'unit': ''}
 
@@ -166,6 +169,7 @@ class Session:
             if len(input_tags) >= 2 and len(button_tags) >= 1:
                 break # success
             count += 1
+            self.printer.print(self.timestamp + ' >>> Retry in login page')
         else:
             self.printer.print(self.timestamp + ' >>> Error: The browser timed out (login) in ' + login_url)
             return False # failed
@@ -181,6 +185,7 @@ class Session:
             if url == local_settings.facility_url():
                 break # success
             count += 1
+            self.printer.print(self.timestamp + ' >>> Retry in first page.')
         else:
             self.printer.print(self.timestamp + ' >>> Error: The browser timed out (first page).')
             return False # failed
@@ -199,7 +204,9 @@ class Session:
             if len(get_tags) == 1:
                 break
             count += 1
+            self.printer.print(self.timestamp + ' >>> Retry in system info page.')
         else:
+            self.printer.print(self.timestamp + ' >>> Error: The browser timed out (system info page).')
             return False # failed
         pairs = self.__get_value_pairs(self.driver, 'System')
         self.pages.append(pairs)
