@@ -64,16 +64,16 @@ class Session:
         """ wait-check for component_name response """
         count = 1
         while count <= self.MAXTRY:
+            time.sleep(1) # delayed for dynamic page
             get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
             if len(get_component_tags) == 1:
                 element = get_component_tags[0].text
                 if element.startswith(component_name):
                     break
-            self.printer.print(self.timestamp + ' >>> Retry in wait for component')
-            time.sleep(1) # delayed retry
+            self.printer.print(self.now() + ' >>> Retry in wait for component')
             count += 1
         else:
-            self.printer.print(self.timestamp + ' >>> Error: time out in wait for component ' + component_name)
+            self.printer.print(self.now() + ' >>> Error: time out in wait for component ' + component_name)
             return False # failed
         return True # success
 
@@ -93,10 +93,10 @@ class Session:
             if noblanks:
                 return pairs # success
             else:
-                self.printer.print(self.timestamp + ' >>> Retry in get value pairs for ' + page_id)
-                time.sleep(1) # delayed retry
+                time.sleep(1)  # delayed retry
+                self.printer.print(self.now() + ' >>> Retry in get value pairs for ' + page_id)
                 count += 1
-        self.printer.print(self.timestamp + ' >>> Error: time out in get value pairs for ' + page_id)
+        self.printer.print(self.now() + ' >>> Error: time out in get value pairs for ' + page_id)
         return [] # failed
 
     def __join_pairs(self, keys, values, page_id):
@@ -145,7 +145,7 @@ class Session:
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
         self.timestamp = self.now()
-        self.printer.print(self.timestamp + ' >>> login in to url: ' + login_url)
+        self.printer.print(self.now() + ' >>> login in to url: ' + login_url)
         self.pages = []
         # start webdriver service
         xtime = time.time()
@@ -154,11 +154,11 @@ class Session:
         else:  # OSX and LInux
             cdpath = '/usr/local/bin/chromedriver'
         self.driver = webdriver.Chrome(executable_path=cdpath)
-        self.printer.print(self.timestamp + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
+        self.printer.print(self.now() + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
         # open login page
         xtime = time.time()
         self.driver.get(login_url)
-        self.printer.print(self.timestamp + ' >>> loaded login page in ' + str(round(time.time() - xtime, 3)) + 'secs.')
+        self.printer.print(self.now() + ' >>> loaded login page in ' + str(round(time.time() - xtime, 3)) + 'secs.')
         time.sleep(4) # do absolutely nothing for the first 5 seconds
         # wait-check for response
         count = 1
@@ -169,9 +169,9 @@ class Session:
             if len(input_tags) >= 2 and len(button_tags) >= 1:
                 break # success
             count += 1
-            self.printer.print(self.timestamp + ' >>> Retry in login page')
+            self.printer.print(self.now() + ' >>> Retry in login page')
         else:
-            self.printer.print(self.timestamp + ' >>> Error: The browser timed out (login) in ' + login_url)
+            self.printer.print(self.now() + ' >>> Error: The browser timed out (login) in ' + login_url)
             return False # failed
         # fill out login form
         input_tags[0].send_keys(username)
@@ -185,9 +185,9 @@ class Session:
             if url == local_settings.facility_url():
                 break # success
             count += 1
-            self.printer.print(self.timestamp + ' >>> Retry in first page.')
+            self.printer.print(self.now() + ' >>> Retry in first page.')
         else:
-            self.printer.print(self.timestamp + ' >>> Error: The browser timed out (first page).')
+            self.printer.print(self.now() + ' >>> Error: The browser timed out (first page).')
             return False # failed
         self.printer.print(self.now() + ' >>> successfull login')
         return True # success
@@ -204,9 +204,9 @@ class Session:
             if len(get_tags) == 1:
                 break
             count += 1
-            self.printer.print(self.timestamp + ' >>> Retry in system info page.')
+            self.printer.print(self.now() + ' >>> Retry in system info page.')
         else:
-            self.printer.print(self.timestamp + ' >>> Error: The browser timed out (system info page).')
+            self.printer.print(self.now() + ' >>> Error: The browser timed out (system info page).')
             return False # failed
         pairs = self.__get_value_pairs(self.driver, 'System')
         self.pages.append(pairs)
