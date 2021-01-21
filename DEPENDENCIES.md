@@ -32,4 +32,6 @@ This application is built and tested with the following dependencies:
 Developed with:
 
 - ***pycharm*** (Professional 2020.3): Jetbrains Python IDE 
-
+  - where pyCharm > File > Settings > Version Control > Commit
+    - unset the checkbox "Use non-modal commit interface"
+    - this wil enable your favorite Git > Local Changes window
