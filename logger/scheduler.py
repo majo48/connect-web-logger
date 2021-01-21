@@ -60,7 +60,7 @@ class Scheduler:
             retry_counter += 1
             self.printer.print(self._now() + " >>> retry job " + jobtime)
         else:
-            self.printer.print(self._now() + " >>> max. retries exceeded, skipped job " + jobtime)
+            self.printer.print(self._now() + " >>> Error: max. retries exceeded, skipped job " + jobtime)
         pass
 
 

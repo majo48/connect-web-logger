@@ -90,7 +90,7 @@ class Session:
             else:
                 values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
             pairs, noblanks = self.__join_pairs(keys, values, page_id)
-            if noblanks:
+            if noblanks and len(pairs) > 0:
                 return pairs # success
             else:
                 time.sleep(1)  # delayed retry
@@ -103,6 +103,7 @@ class Session:
         """ join keys, values and units in a list of tuples """
         pairs = []
         if len(keys) != len(values):
+            self.printer.print(self.now() + ' >>> key, value arrays not same length.')
             noblanks = False
             return noblanks, pairs
         noblanks = True
@@ -185,11 +186,10 @@ class Session:
             if url == local_settings.facility_url():
                 break # success
             count += 1
-            self.printer.print(self.now() + ' >>> Retry in first page.')
+            self.printer.print(self.now() + ' >>> Retry in facility page.')
         else:
-            self.printer.print(self.now() + ' >>> Error: The browser timed out (first page).')
+            self.printer.print(self.now() + ' >>> Error: The browser timed out (facility page).')
             return False # failed
-        self.printer.print(self.now() + ' >>> successfull login')
         return True # success
 
     def _get_system_info(self):
