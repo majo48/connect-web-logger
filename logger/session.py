@@ -77,11 +77,24 @@ class Session:
             return False # failed
         return True # success
 
+    def __scroll2bottom(self, driver):
+        """
+            Scroll to bottom of page:
+            1. We need this for small screens (e.g. Windows PC)
+            2. dynamic pages need to update the last part of the key, value arrays
+            3. else we get unreachable elements with is_displayed() == False
+        """
+        keys = driver.find_elements_by_xpath("//div[@class='key']")
+        target = keys[-1] # last element in array
+        driver.execute_script('arguments[0].scrollIntoView(true);', target)
+        time.sleep(1)
+
     def __get_value_pairs(self, driver, page_id):
         """
             get key, value pairs from the WebDriver object
             delay and retry, if any key or value aren't loaded yet (len()==0)
         """
+        self.__scroll2bottom(self.driver)
         count = 1
         while count <= self.MAXTRY:
             keys = driver.find_elements_by_xpath("//div[@class='key']")
