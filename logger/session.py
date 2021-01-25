@@ -172,7 +172,7 @@ class Session:
             cdpath = '/usr/local/bin/chromedriver'
             options.headless = False
         elif platform == 'linux': # Ubuntu 20.04
-            cdpath = '/usr/local/bin/chromedriver'
+            cdpath = '/usr/bin/chromedriver'
             options.headless = True
         else:
             raise Exception('Operating system('+platform+') not supported.')
