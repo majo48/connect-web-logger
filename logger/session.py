@@ -2,7 +2,7 @@
     This file contains code for querying the connect-web registered account
     Copyright (c) 2020 M. Jonasse (martin.jonasse@mail.ch)
 
-    This module uses the Google Chrome webdriver, Firefox (geckodriver) is buggy and slow.
+    This module uses the Google Chrome webdriver, Firefox (geckodriver) is rather buggy and slow.
     Follow the instructions provided in https://sites.google.com/a/chromium.org/chromedriver/home
     The current implementation in MacBook is /usr/local/bin/chromedriver --version
     ChromeDriver 87.0.4280.88 (89e2380a3e36c3464b5dd1302349b1382549290d-refs/branch-heads/4280@{#1761})
@@ -10,6 +10,7 @@
 """
 from shared import database, local_settings
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from sys import platform
 import time
 import os
@@ -161,13 +162,22 @@ class Session:
         self.timestamp = self.now()
         self.printer.print(self.now() + ' >>> login in to url: ' + login_url)
         self.pages = []
-        # start webdriver service
+        # platform dependent part
         xtime = time.time()
-        if platform == "win32":
+        options = Options()
+        if platform == "win32": # Windows 10
             cdpath = 'C:/WebDriver/bin/chromedriver.exe'
-        else:  # OSX and LInux
+            options.headless = False
+        elif platform == "darwin":  # OSX High Sierra
             cdpath = '/usr/local/bin/chromedriver'
-        self.driver = webdriver.Chrome(executable_path=cdpath)
+            options.headless = False
+        elif platform == 'linux': # Ubuntu 20.04
+            cdpath = '/usr/local/bin/chromedriver'
+            options.headless = True
+        else:
+            raise Exception('Operating system('+platform+') not supported.')
+        # start webdriver service
+        self.driver = webdriver.Chrome(executable_path=cdpath, options=options)
         self.printer.print(self.now() + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
         # open login page
         xtime = time.time()
