@@ -174,6 +174,7 @@ class Session:
         elif platform == 'linux': # Ubuntu 20.04
             cdpath = '/usr/bin/chromedriver'
             options.headless = True
+            raise Exception('Depreciated: headless version has too many errors, not supported.')
         else:
             raise Exception('Operating system('+platform+') not supported.')
         # start webdriver service
