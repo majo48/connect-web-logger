@@ -13,8 +13,7 @@ import matplotlib.dates as mdates
 
 class Plotter:
     """ plotter implementation """
-    def __init__(self, from_date, to_date,
-                 lines={'Boiler02': 'Flue Gas [°C]'},
+    def __init__(self, from_date, to_date, lines,
                  filename='plot.png',
                  printer=printlog.PrintLog()):
         """ run plotter once """
@@ -36,14 +35,15 @@ class Plotter:
         ax.set_title(filename)
         hrs = mdates.HourLocator() # every hour
         ax.xaxis.set_minor_locator(hrs)
+        ax.grid(linestyle='dotted', linewidth='0.2', color='grey')
 
-        # create lines
-        for key, value in lines.items():
-            ylist = db.get_rows_with(from_date, to_date, key)
+        # create multiline plot
+        for line in lines:
+            ylist = db.get_rows_with(from_date, to_date, line['dbid'])
             if len(ylist) == 0:
-                raise Exception('Invalid key('+key+') for getting a plot')
+                raise Exception('Invalid key('+line['dbid']+') for getting a plot')
             y = np.array(ylist)
-            ax.plot(x, y, label=value)
+            ax.plot(x, y, label=line['label'], color=line['color'], linestyle=line['style'])
         ax.legend()
 
         # create output file

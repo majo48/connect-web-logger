@@ -10,7 +10,7 @@ from plotter import multilineplotter
 from shared import printlog
 
 
-def _get_charts():
+def get_charts():
     """
         define the charts to be rendered by this app
         plots: { 'database-index': 'plot-label', ... }
@@ -18,31 +18,32 @@ def _get_charts():
     return [
         {
             'filename': 'rauchgas.png',
-            'plots': {
-                'Boiler02': 'Flue Gas [°C]',
-                'Boiler01': 'Boiler [°C]',
-                'Tank02': 'DHW pump [%]'
-            }
+            'lines': [
+                {'dbid': 'Boiler02', 'label': 'Flue Gas [°C]', 'color': 'brown', 'style': 'solid'},
+                {'dbid': 'Boiler01', 'label': 'Boiler [°C]', 'color': 'orange', 'style': 'solid'},
+                {'dbid': 'Heating02', 'label': 'Flow setpoint [°C]', 'color': 'darkviolet', 'style': 'dashed'},
+                {'dbid': 'Tank02', 'label': 'DHW pump [%]', 'color': 'lime', 'style': 'dashed'}
+            ]
         },
         {
             'filename': 'heizen.png',
-            'plots': {
-                'Boiler01': 'Boiler [°C]',
-                'Heating01': 'Actual flow [°C]',
-                'Heating02': 'Flow setpoint [°C]',
-                'Heating07': 'Room setpoint [°C]',
-                'Heating03': 'Room [°C]',
-                'Heating04': 'Outside [°C]'
-            }
+            'lines': [
+                {'dbid': 'Boiler01', 'label': 'Boiler [°C]', 'color': 'orange', 'style': 'solid'},
+                {'dbid': 'Heating02', 'label': 'Flow setpoint [°C]', 'color': 'red', 'style': 'dashed'},
+                {'dbid': 'Heating01', 'label': 'Actual flow [°C]', 'color': 'red', 'style': 'solid'},
+                {'dbid': 'Heating07', 'label': 'Room setpoint [°C]', 'color': 'blue', 'style': 'dashed'},
+                {'dbid': 'Heating03', 'label': 'Room [°C]', 'color': 'blue', 'style': 'solid'},
+                {'dbid': 'Heating04', 'label': 'Outside [°C]', 'color': 'black', 'style': 'solid'}
+            ]
         },
         {
             'filename': 'warmwasser.png',
-            'plots': {
-                'Boiler01': 'Boiler [°C]',
-                'Tank02': 'DHW pump [%]',
-                'Tank01': 'DHW tank top [°C]',
-                'Tank03': 'Tank top setpoint [°C]'
-            }
+            'lines': [
+                {'dbid': 'Boiler01', 'label': 'Boiler [°C]','color': 'orange', 'style': 'solid'},
+                {'dbid': 'Tank02', 'label': 'DHW pump [%]','color': 'lime', 'style': 'dashed'},
+                {'dbid': 'Tank03', 'label': 'Tank top setpoint [°C]', 'color': 'blue', 'style': 'dashed'},
+                {'dbid': 'Tank01', 'label': 'DHW tank top [°C]','color': 'blue', 'style': 'solid'}
+            ]
         }
     ]
 
@@ -65,13 +66,11 @@ def run(from_date=None, to_date=None):
                 to_date = db.get_last_timestamp()
             printer.print('Last timestamp: ' + to_date)
             # render charts
-            for chart in _get_charts():
-                filename = chart['filename']
-                plots = chart['plots']
+            for chart in get_charts():
                 multilineplotter.Plotter(
                     from_date,
                     to_date,
-                    chart['plots'],
+                    chart['lines'],
                     chart['filename'],
                     printer
                 )
