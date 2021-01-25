@@ -72,6 +72,7 @@ def get_timeslots(from_date, to_date):
                 'from': from_obj.strftime(isoformat),
                 'to': next_obj.strftime(isoformat)
             })
+            from_obj = next_obj
             next_obj += timedelta(days=1)
             count += 1
 
