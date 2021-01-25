@@ -18,6 +18,9 @@ class Plotter:
                  printer=printlog.PrintLog()):
         """ run plotter once """
 
+        # prefix filename with date
+        filename = from_date[0:10] + '-' + filename
+
         # open database
         db = database.Database(printer)
 
@@ -32,10 +35,10 @@ class Plotter:
         fig, ax = plt.subplots(figsize=(11.6,8.2)) # object oriented IF
         ax.set_xlabel('Month-Day Hour')
         ax.set_ylabel('Degree Celcius / Percent')
-        ax.set_title(filename)
+        ax.set_title(filename) # title is filename
         hrs = mdates.HourLocator() # every hour
-        ax.xaxis.set_minor_locator(hrs)
-        ax.grid(linestyle='dotted', linewidth='0.2', color='grey')
+        ax.xaxis.set_minor_locator(hrs) # minor ticks
+        ax.grid(linestyle='dotted', linewidth='0.2', color='grey') # grid
 
         # create multiline plot
         for line in lines:
