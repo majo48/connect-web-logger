@@ -7,6 +7,7 @@
 import sys, traceback
 from shared import database
 from plotter import multilineplotter
+from plotter import consumption
 from shared import printlog
 from datetime import datetime, timedelta
 
@@ -110,6 +111,12 @@ def run(from_date=None, to_date=None, with_timeslots=False):
                         chart['filename'],
                         printer
                     )
+                consumption.Consumption(
+                    timeslot['from'],
+                    timeslot['to'],
+                    'verbrauch.png',
+                    printer
+                )
                 pass
 
     #
