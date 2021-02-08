@@ -133,11 +133,11 @@ class Database:
             self.printer.print("SQLite INSERT person error occurred: " + e.args[0])
 
     def _str2int(self, str):
-        """ convert string to integer """
+        """ convert string to integer value """
         try:
-            return int(str)
+            return int(float(str))
         except:
-            return None
+            return 0
 
     def insert_log(self, log):
         """ insert one record in the 'logs' table """
@@ -266,6 +266,61 @@ class Database:
         except sqlite3.Error as e:
             self.printer.print("SQLite SELECT error occurred(get_rows_with): " + e.args[0])
             return '[]'
+
+    def get_hours(self, fromDate, toDate):
+        """ get all hourly distinct timestamps after(incl.) fromDate until toDate(incl.) """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT timestamp
+            FROM logs
+            WHERE page_key = "Feed07"
+            AND timestamp like "%00:00"
+            AND timestamp >= '?1'
+            AND timestamp <= '?2'
+            ORDER BY timestamp ASC
+        """
+        try:
+            sql = sql.replace('?1', fromDate)
+            sql = sql.replace('?2', toDate)
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            return [x[0] for x in rows] # list of strings
+        #
+        except sqlite3.Error as e:
+            self.printer.print("SQLite SELECT error occurred(get_timestamps): " + e.args[0])
+            return '[]'
+
+    def get_hourly_consumption(self, fromDate, toDate):
+        """ get the hourly consumption (kg/hour) after(incl.) fromDate until toDate(incl.) """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT ROUND(kg - LAG(kg, 1)  OVER (ORDER BY timestamp), 1) 'kgh'
+            FROM (
+                SELECT 
+                    timestamp, value*1000 AS kg
+                FROM logs
+                WHERE page_key = "Feed07"
+                AND timestamp like "%00:00"
+                AND timestamp >= '?1'
+                AND timestamp <= '?2'
+                ORDER BY timestamp ASC
+            ) AS kgs
+        """
+        try:
+            sql = sql.replace('?1', fromDate)
+            sql = sql.replace('?2', toDate)
+            cursor.execute( sql )
+            rows = cursor.fetchall()
+            conn.close()
+            return [self._str2int(y[0]) for y in rows] # list of integer values (or None)
+        #
+        except sqlite3.Error as e:
+            self.printer.print("SQLite SELECT error occurred(get_consumption): " + e.args[0])
+            return '[]'
+
 
 
 if __name__ == '__main__':
