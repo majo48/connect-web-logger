@@ -85,10 +85,18 @@ class Session:
             2. dynamic pages need to update the last part of the key, value arrays
             3. else we get unreachable elements with is_displayed() == False
         """
-        keys = driver.find_elements_by_xpath("//div[@class='key']")
-        target = keys[-1] # last element in array
-        driver.execute_script('arguments[0].scrollIntoView(true);', target)
-        time.sleep(1)
+        count = 1
+        while count <= self.MAXTRY:
+            try:
+                keys = driver.find_elements_by_xpath("//div[@class='key']")
+                target = keys[-1] # last element in array
+                driver.execute_script('arguments[0].scrollIntoView(true);', target)
+                time.sleep(1)
+                break
+            except IndexError:
+                self.printer.print(self.now() + ' >>> retry scroll into view.')
+                time.sleep(1) # give pause
+                count += 1 # retry, until last element in array is available
 
     def __get_value_pairs(self, driver, page_id):
         """
@@ -188,13 +196,17 @@ class Session:
         # wait-check for response
         count = 1
         while count <= self.MAXTRY:
-            time.sleep(1)
-            input_tags = self.driver.find_elements_by_tag_name("input")
-            button_tags = self.driver.find_elements_by_tag_name("button")
-            if len(input_tags) >= 2 and len(button_tags) >= 1:
-                break # success
-            count += 1
+            try:
+                input_tags = self.driver.find_elements_by_tag_name("input")
+                button_tags = self.driver.find_elements_by_tag_name("button")
+                if len(input_tags) >= 2 and len(button_tags) >= 1:
+                    break  # success
+            except:
+                pass # a selenium exception occured
+            #
             self.printer.print(self.now() + ' >>> Retry in login page')
+            count += 1
+            time.sleep(1)
         else:
             self.printer.print(self.now() + ' >>> Error: The browser timed out (login) in ' + login_url)
             return False # failed
