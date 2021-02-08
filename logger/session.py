@@ -97,6 +97,7 @@ class Session:
                 self.printer.print(self.now() + ' >>> retry scroll into view.')
                 time.sleep(1) # give pause
                 count += 1 # retry, until last element in array is available
+        pass
 
     def __get_value_pairs(self, driver, page_id):
         """
@@ -220,6 +221,15 @@ class Session:
             time.sleep(1)
             url = self.driver.current_url
             if url == local_settings.facility_url():
+                # check default language
+                try:
+                    divs = self.driver.find_elements_by_xpath("//div[contains(@class, 'menu-item-label')]")
+                    check = divs[0].text
+                    if check[0:13] != 'MY FACILITIES':
+                        self.printer.print(self.now() + ' >>> default language must be set to English.')
+                    pass
+                except:
+                    pass
                 break # success
             count += 1
             self.printer.print(self.now() + ' >>> Retry in facility page.')
