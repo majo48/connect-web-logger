@@ -166,6 +166,57 @@ class Session:
                 return { 'value': v, 'unit': u}
         return {'value': value_unit, 'unit': ''}
 
+    def __get_boiler_state_number(self, state_name):
+        """ get the number that corresponds to the state name """
+        states = {
+            'Preparation': 1, 'Heating up': 2, 'Pre-heating': 3, 'Ignition': 4, 'Heating': 5,
+            'Cleaning': -1, 'Shutdown wait': -2, 'Shutdown wait 1': -3, 'Shutdown wait 2': -4,
+            'Fault': -5
+        }
+        try:
+            state_number = states[state_name]
+        except KeyError:
+            state_number = 0
+        return state_number
+
+    def __get_boiler_state(self, driver, page_id):
+        """ read the boiler state from the boiler component page """
+        try:
+            if page_id == 'Boiler':
+                lis = driver.find_elements_by_xpath("//li")
+                li = lis[0].text
+                l = li.split(':')
+                if len(l) == 2 and l[0] == 'Kesselzustand':
+                    # typo in source page: not translated
+                    state_name = l[1].strip()
+                    state_number = self.__get_boiler_state_number(state_name)
+                    self.pages.append([
+                        {
+                            'customer_id': local_settings.customer_id(),
+                            'timestamp': self.timestamp,
+                            'page_id': page_id,
+                            'page_key': page_id + 'ST',
+                            'label': 'Boiler state name',
+                            'value': state_name,
+                            'tunit': ''
+                        },
+                        {
+                            'customer_id': local_settings.customer_id(),
+                            'timestamp': self.timestamp,
+                            'page_id': page_id,
+                            'page_key': page_id + 'NR',
+                            'label': 'Boiler state number',
+                            'value': str(state_number),
+                            'tunit': ''
+                        }
+                    ])
+                    self.printer.print(self.now() + ' >>> boiler state name: ' + state_name)
+                    return True # success
+        except:
+            pass
+        self.printer.print(self.now() + ' >>> Error: wrong status in Boiler page ' + page_id)
+        return False # failed
+
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
         self.timestamp = self.now()
@@ -264,9 +315,11 @@ class Session:
         self.driver.get(local_settings.boiler_info_url())
         success = self.__wait_for_component('Boiler')
         if success:
-            pairs = self.__get_value_pairs(self.driver, 'Boiler')
-            self.pages.append(pairs)
-            success = len(pairs) != 0
+            success = self.__get_boiler_state(self.driver, 'Boiler')
+            if success:
+                pairs = self.__get_value_pairs(self.driver, 'Boiler')
+                self.pages.append(pairs)
+                success = len(pairs) != 0
         return success
 
     def _get_heating_info(self):

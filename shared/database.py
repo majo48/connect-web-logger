@@ -71,10 +71,12 @@ class Database:
         return sqlite3.connect(dbpath)
 
     def __fill_attrs(self):
-        """ insert 47 records in the 'attrs' table """
+        """ insert 49 records in the 'attrs' table """
         conn: Connection = self.__get_connection()
         cursor: Cursor = conn.cursor()
         sqls = [
+            "INSERT INTO 'main'.'attrs' ('page_key', 'label', 'tunit') VALUES ('BoilerST', 'Boiler state name', '');",
+            "INSERT INTO 'main'.'attrs' ('page_key', 'label', 'tunit') VALUES ('BoilerNR', 'Boiler state number', '');",
             "INSERT INTO 'main'.'attrs' ('page_key', 'label', 'tunit') VALUES ('Boiler01', 'Boiler temperature', '°C');",
             "INSERT INTO 'main'.'attrs' ('page_key', 'label', 'tunit') VALUES ('Boiler02', 'Flue gas temperature', '°C');",
             "INSERT INTO 'main'.'attrs' ('page_key', 'label', 'tunit') VALUES ('Boiler03', 'Remaining hours in heating mode till ashbox full warning appear', 'h');",
