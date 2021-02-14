@@ -24,7 +24,8 @@ def get_charts():
                 {'dbid': 'Boiler02', 'label': 'Flue Gas [°C]', 'color': 'saddlebrown', 'style': 'solid'},
                 {'dbid': 'Boiler01', 'label': 'Boiler [°C]', 'color': 'orange', 'style': 'solid'},
                 {'dbid': 'Heating02', 'label': 'Flow setpoint [°C]', 'color': 'red', 'style': 'dashed'},
-                {'dbid': 'Tank02', 'label': 'DHW pump [%]', 'color': 'lime', 'style': 'dashed'}
+                {'dbid': 'Tank02', 'label': 'DHW pump [%]', 'color': 'lime', 'style': 'dashed'},
+                {'dbid': 'BoilerNR', 'label': 'Boiler state', 'color': 'grey', 'style': 'dashed'}
             ]
         },
         {
