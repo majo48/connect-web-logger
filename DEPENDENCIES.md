@@ -21,7 +21,8 @@ This application is built and tested with the following dependencies:
 
 - The above dependencies are located in a new virtual environment, stored in the project repository folder ***connect-web-logger/venv*** (excluded in .gitignore)
 
-- ***Chrome*** (87.0.4270.88): Browser for MacOS
+- ***Chrome*** (89.0.4389.82): Browser for MacOS
+  - staging area (download): https://chromedriver.chromium.org/downloads
   - chromedriver (OSX: download, unzip, terminal: mv <path>/chromedriver /usr/local/bin/chromedriver)
   - chromedriver.exe (Windows: download, unzip, move to: C:\WebDriver\bin\chromedriver.exe)
 
