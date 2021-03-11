@@ -24,7 +24,7 @@ class PrintLog:
             # make folder if it doesn't exist
             if not os.path.exists(self.logfolder):
                 os.makedirs(self.logfolder)
-        pass # filename is None
+        pass  # filename is None
 
     def print(self, txt):
         """

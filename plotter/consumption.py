@@ -13,6 +13,7 @@ import matplotlib.dates as mdates
 
 class Consumption:
     """ plotter implementation """
+
     def __init__(self, from_date, to_date,
                  filename='hourly.png',
                  printer=printlog.PrintLog()):
@@ -32,11 +33,11 @@ class Consumption:
         x = np.array(xl)
 
         # create & decorate canvas
-        fig, ax = plt.subplots(figsize=(11.6,8.2)) # object oriented IF
+        fig, ax = plt.subplots(figsize=(11.6, 8.2))  # object oriented IF
         ax.set_xlabel('Datetime')
         ax.set_ylabel('kg (pellets)')
-        ax.set_title(filename) # title is filename
-        ax.grid(linestyle='dotted', linewidth='0.2', color='grey') # grid
+        ax.set_title(filename)  # title is filename
+        ax.grid(linestyle='dotted', linewidth='0.2', color='grey')  # grid
 
         # create hourly chart
         ylist = db.get_hourly_consumption(from_date, to_date)
@@ -62,20 +63,19 @@ class Consumption:
                 kgs += y
             hrs = len(ylist)
             avg = round(kgs / hrs * 24, 1)
-            stats = ' (' + str(kgs) + ' kg in ' + str(hrs) + ' hr, avg= ' + str(avg) +' kg/day)'
+            stats = ' (' + str(kgs) + ' kg in ' + str(hrs) + ' hr, avg= ' + str(avg) + ' kg/day)'
             ax.set_title(filename + stats)
-            ax.axhline(kgs/hrs, color='red', linewidth=2)
+            ax.axhline(kgs / hrs, color='red', linewidth=2)
         #
         elif charttype == 'step':
             # see matplotlib.pyplot.step
             raise Exception('Step chart not implemented yet')
         #
         # create output file
-        printer.print('Created file: '+filename)
+        printer.print('Created file: ' + filename)
         fig.savefig(printer.get_foldername() + printer.get_slash() + filename)
         fig.show()
 
 
 if __name__ == '__main__':
     print('So sorry, the ' + os.path.basename(__file__) + ' module does not run as a standalone.')
-

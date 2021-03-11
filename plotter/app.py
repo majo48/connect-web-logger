@@ -42,13 +42,14 @@ def get_charts():
         {
             'filename': 'warmwasser.png',
             'lines': [
-                {'dbid': 'Boiler01', 'label': 'Boiler [°C]','color': 'orange', 'style': 'solid'},
-                {'dbid': 'Tank02', 'label': 'DHW pump [%]','color': 'lime', 'style': 'dashed'},
+                {'dbid': 'Boiler01', 'label': 'Boiler [°C]', 'color': 'orange', 'style': 'solid'},
+                {'dbid': 'Tank02', 'label': 'DHW pump [%]', 'color': 'lime', 'style': 'dashed'},
                 {'dbid': 'Tank03', 'label': 'Tank top setpoint [°C]', 'color': 'blue', 'style': 'dashed'},
-                {'dbid': 'Tank01', 'label': 'DHW tank top [°C]','color': 'blue', 'style': 'solid'}
+                {'dbid': 'Tank01', 'label': 'DHW tank top [°C]', 'color': 'blue', 'style': 'solid'}
             ]
         }
     ]
+
 
 def get_timeslots(from_date, to_date):
     """ render from .. to date to timeslots of one day per timeslot """
@@ -65,8 +66,8 @@ def get_timeslots(from_date, to_date):
         if to_obj <= next_obj:
             next_obj -= timedelta(days=1)
             timeslots.append({
-                    'from': next_obj.strftime(isoformat),
-                    'to': to_obj.strftime(isoformat)
+                'from': next_obj.strftime(isoformat),
+                'to': to_obj.strftime(isoformat)
             })
             return timeslots
         else:
@@ -100,7 +101,7 @@ def run(from_date=None, to_date=None, with_timeslots=True):
                 timeslots = get_timeslots(from_date, to_date)
             else:
                 # one chart only
-                timeslots = [{ 'from': from_date, 'to': to_date  }]
+                timeslots = [{'from': from_date, 'to': to_date}]
             #
             for timeslot in timeslots:
                 # render one or more charts
@@ -140,8 +141,8 @@ def manage_arguments():
         run(sys.argv[1], sys.argv[2])
     elif arg_cnt == 4:
         # three arguments (from_date, to_date, with_timeslots)
-        with_timeslots =\
-            sys.argv[3].lower() == 'y' or sys.argv[3].lower() == 'yes' or\
+        with_timeslots = \
+            sys.argv[3].lower() == 'y' or sys.argv[3].lower() == 'yes' or \
             sys.argv[3].lower() == 'j' or sys.argv[3].lower() == 'ja'
         run(sys.argv[1], sys.argv[2], with_timeslots)
     else:

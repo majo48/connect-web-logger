@@ -24,6 +24,6 @@ def run():
 
 
 if __name__ == '__main__':
-    run() # prints to console
+    run()  # prints to console
     # Test selenium & firefox...
     # Title: Welcome to Python.org

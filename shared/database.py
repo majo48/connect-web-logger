@@ -127,7 +127,7 @@ class Database:
         ]
         try:
             for sql in sqls:
-                cursor.execute( sql )
+                cursor.execute(sql)
             conn.commit()
             conn.close()
         #
@@ -176,7 +176,7 @@ class Database:
             SELECT count(*) from logs
         """
         try:
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
             row = rows[0]
@@ -195,7 +195,7 @@ class Database:
             LIMIT 1
         """
         try:
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
             row = rows[0]
@@ -215,7 +215,7 @@ class Database:
             LIMIT 1
         """
         try:
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
             row = rows[0]
@@ -237,10 +237,10 @@ class Database:
         try:
             sql = sql.replace('?1', fromDate)
             sql = sql.replace('?2', toDate)
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
-            return [x[0] for x in rows] # list of strings
+            return [x[0] for x in rows]  # list of strings
         #
         except sqlite3.Error as e:
             self.printer.print("SQLite SELECT error occurred(get_timestamps): " + e.args[0])
@@ -260,10 +260,10 @@ class Database:
             sql = sql.replace('?1', fromDate)
             sql = sql.replace('?2', toDate)
             sql = sql.replace('?3', colName)
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
-            return [self._str2int(y[0]) for y in rows] # list of integer values (or None)
+            return [self._str2int(y[0]) for y in rows]  # list of integer values (or None)
         #
         except sqlite3.Error as e:
             self.printer.print("SQLite SELECT error occurred(get_rows_with): " + e.args[0])
@@ -285,10 +285,10 @@ class Database:
         try:
             sql = sql.replace('?1', fromDate)
             sql = sql.replace('?2', toDate)
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
-            return [x[0] for x in rows] # list of strings
+            return [x[0] for x in rows]  # list of strings
         #
         except sqlite3.Error as e:
             self.printer.print("SQLite SELECT error occurred(get_timestamps): " + e.args[0])
@@ -314,15 +314,14 @@ class Database:
         try:
             sql = sql.replace('?1', fromDate)
             sql = sql.replace('?2', toDate)
-            cursor.execute( sql )
+            cursor.execute(sql)
             rows = cursor.fetchall()
             conn.close()
-            return [self._str2int(y[0]) for y in rows] # list of integer values (or None)
+            return [self._str2int(y[0]) for y in rows]  # list of integer values (or None)
         #
         except sqlite3.Error as e:
             self.printer.print("SQLite SELECT error occurred(get_consumption): " + e.args[0])
             return '[]'
-
 
 
 if __name__ == '__main__':

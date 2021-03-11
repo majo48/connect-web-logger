@@ -28,7 +28,7 @@ class Scheduler:
         self.jobtimes = []
         for hour in hours:
             for minute in minutes[period_minutes]:
-                self.jobtimes.append( hour + ':' + minute )
+                self.jobtimes.append(hour + ':' + minute)
         # setup job schedules
         for jobtime in self.jobtimes:
             schedule.every().day.at(jobtime).do(self._job, jobtime, username, password)

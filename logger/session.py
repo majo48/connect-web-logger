@@ -26,7 +26,7 @@ class Session:
         """ initialize a scraping session with connect-web """
         self._success = False
         self.printer = printer
-        self.units = { 'percent': '%', 'degrees': '°C', 'hours': 'h', 'tons': 't', 'kilograms': 'kg' }
+        self.units = {'percent': '%', 'degrees': '°C', 'hours': 'h', 'tons': 't', 'kilograms': 'kg'}
         try:
             success = self._login(login_url, username, password)
             if success:
@@ -65,7 +65,7 @@ class Session:
         """ wait-check for component_name response """
         count = 1
         while count <= self.MAXTRY:
-            time.sleep(1) # delayed for dynamic page
+            time.sleep(1)  # delayed for dynamic page
             get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
             if len(get_component_tags) == 1:
                 element = get_component_tags[0].text
@@ -75,8 +75,8 @@ class Session:
             count += 1
         else:
             self.printer.print(self.now() + ' >>> Error: time out in wait for component ' + component_name)
-            return False # failed
-        return True # success
+            return False  # failed
+        return True  # success
 
     def __scroll2bottom(self, driver):
         """
@@ -89,14 +89,14 @@ class Session:
         while count <= self.MAXTRY:
             try:
                 keys = driver.find_elements_by_xpath("//div[@class='key']")
-                target = keys[-1] # last element in array
+                target = keys[-1]  # last element in array
                 driver.execute_script('arguments[0].scrollIntoView(true);', target)
                 time.sleep(1)
                 break
             except IndexError:
                 self.printer.print(self.now() + ' >>> retry scroll into view.')
-                time.sleep(1) # give pause
-                count += 1 # retry, until last element in array is available
+                time.sleep(1)  # give pause
+                count += 1  # retry, until last element in array is available
         pass
 
     def __get_value_pairs(self, driver, page_id):
@@ -114,13 +114,13 @@ class Session:
                 values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
             pairs, noblanks = self.__join_pairs(keys, values, page_id)
             if noblanks and len(pairs) > 0:
-                return pairs # success
+                return pairs  # success
             else:
                 time.sleep(1)  # delayed retry
                 self.printer.print(self.now() + ' >>> Retry in get value pairs for ' + page_id)
                 count += 1
         self.printer.print(self.now() + ' >>> Error: time out in get value pairs for ' + page_id)
-        return [] # failed
+        return []  # failed
 
     def __join_pairs(self, keys, values, page_id):
         """ join keys, values and units in a list of tuples """
@@ -140,19 +140,19 @@ class Session:
             pair = self.__split_value_unit(value)
             value = pair['value']
             tunit = pair['unit']
-            page_idx = str(idx+1)
+            page_idx = str(idx + 1)
             if len(page_idx) == 1:
                 page_idx = '0' + page_idx
             pairs.append({
                 'customer_id': local_settings.customer_id(),
                 'timestamp': self.timestamp,
                 'page_id': page_id,
-                'page_key' : page_id + page_idx,
+                'page_key': page_id + page_idx,
                 'label': key,
                 'value': value,
                 'tunit': tunit
             })
-            idx += 1 # next key, value
+            idx += 1  # next key, value
         return pairs, noblanks
 
     def __split_value_unit(self, value_unit):
@@ -160,10 +160,10 @@ class Session:
         spos = value_unit.rfind(' ')
         if spos != -1:
             # may contain a technical unit
-            u = value_unit[spos+1:]
+            u = value_unit[spos + 1:]
             v = value_unit[:spos]
             if u in self.units.values():
-                return { 'value': v, 'unit': u}
+                return {'value': v, 'unit': u}
         return {'value': value_unit, 'unit': ''}
 
     def __get_boiler_state_number(self, state_name):
@@ -211,11 +211,11 @@ class Session:
                         }
                     ])
                     self.printer.print(self.now() + ' >>> boiler state name: ' + state_name)
-                    return True # success
+                    return True  # success
         except:
             pass
         self.printer.print(self.now() + ' >>> Error: wrong status in Boiler page ' + page_id)
-        return False # failed
+        return False  # failed
 
     def _login(self, login_url, username, password):
         """ login to the connect-web.froeling.com site """
@@ -225,26 +225,26 @@ class Session:
         # platform dependent part
         xtime = time.time()
         options = Options()
-        if platform == "win32": # Windows 10
+        if platform == "win32":  # Windows 10
             cdpath = 'C:/WebDriver/bin/chromedriver.exe'
             options.headless = False
         elif platform == "darwin":  # OSX High Sierra
             cdpath = '/usr/local/bin/chromedriver'
             options.headless = False
-        elif platform == 'linux': # Ubuntu 20.04
+        elif platform == 'linux':  # Ubuntu 20.04
             cdpath = '/usr/bin/chromedriver'
             options.headless = True
             raise Exception('Depreciated: headless version has too many errors, not supported.')
         else:
-            raise Exception('Operating system('+platform+') not supported.')
+            raise Exception('Operating system(' + platform + ') not supported.')
         # start webdriver service
         self.driver = webdriver.Chrome(executable_path=cdpath, options=options)
-        self.printer.print(self.now() + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.' )
+        self.printer.print(self.now() + ' >>> started webdriver in ' + str(round(time.time() - xtime, 3)) + 'secs.')
         # open login page
         xtime = time.time()
         self.driver.get(login_url)
         self.printer.print(self.now() + ' >>> loaded login page in ' + str(round(time.time() - xtime, 3)) + 'secs.')
-        time.sleep(4) # do absolutely nothing for the first 5 seconds
+        time.sleep(4)  # do absolutely nothing for the first 5 seconds
         # wait-check for response
         count = 1
         while count <= self.MAXTRY:
@@ -254,14 +254,14 @@ class Session:
                 if len(input_tags) >= 2 and len(button_tags) >= 1:
                     break  # success
             except:
-                pass # a selenium exception occured
+                pass  # a selenium exception occured
             #
             self.printer.print(self.now() + ' >>> Retry in login page')
             count += 1
             time.sleep(1)
         else:
             self.printer.print(self.now() + ' >>> Error: The browser timed out (login) in ' + login_url)
-            return False # failed
+            return False  # failed
         # fill out login form
         input_tags[0].send_keys(username)
         input_tags[1].send_keys(password)
@@ -281,13 +281,13 @@ class Session:
                     pass
                 except:
                     pass
-                break # success
+                break  # success
             count += 1
             self.printer.print(self.now() + ' >>> Retry in facility page.')
         else:
             self.printer.print(self.now() + ' >>> Error: The browser timed out (facility page).')
-            return False # failed
-        return True # success
+            return False  # failed
+        return True  # success
 
     def _get_system_info(self):
         """ scrape infos from the facility info site """
@@ -304,7 +304,7 @@ class Session:
             self.printer.print(self.now() + ' >>> Retry in system info page.')
         else:
             self.printer.print(self.now() + ' >>> Error: The browser timed out (system info page).')
-            return False # failed
+            return False  # failed
         pairs = self.__get_value_pairs(self.driver, 'System')
         self.pages.append(pairs)
         return len(pairs) != 0
@@ -367,4 +367,3 @@ class Session:
 
 if __name__ == '__main__':
     print('So sorry, the ' + os.path.basename(__file__) + ' module does not run as a standalone.')
-
