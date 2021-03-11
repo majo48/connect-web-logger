@@ -79,7 +79,7 @@ def get_timeslots(from_date, to_date):
             count += 1
 
 
-def run(from_date=None, to_date=None, with_timeslots=False):
+def run(from_date=None, to_date=None, with_timeslots=True):
     """
         argument from_date may be replaced with the first timestamp
         from the database, to_date with the last timestamp

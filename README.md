@@ -1,5 +1,5 @@
 # connect-web-logger
-Log information from a registered account at connect-web.froeling.com.
+Scrape & log information from a registered account at connect-web.froeling.com.
 
 # Prerequisites
 - a Fröling PE1 pellet boiler at your home 
@@ -12,15 +12,17 @@ Log information from a registered account at connect-web.froeling.com.
 - data acquisition period in minutes (15, 30, 60)
 
 # Process
-- get status (configuration) data from the froeling website (read-only)
-- write status (configuration) values to a database
+- connect-web-logger/logger/app.py:
+  - get status (configuration) data from the froeling website (read-only)
+  - write status (configuration) values to a database
   - this project does NOT need MODBUS hardware (like https://github.com/mhoffacker/PyLamdatronicP3200)
-- get plots from the database (run plotter/app.py)
+- connect-web-logger/plotter/app.py:
+  - render plots stored in the database 
 
 # Output
 - process status information (stdout, stderr)
 - a SQLite database file containing the periodic data
-- Three PNG plotter files
+- four PNG plotter files (see Wiki/charts)
 
 # Running the app
 - change directory(cd) to where this project resides
@@ -33,8 +35,10 @@ Log information from a registered account at connect-web.froeling.com.
 
 # Fairness / Legal
 - this app puts some strain on the froeling.com website
-- use only for optimizing your Fröling PE1 pellet boiler
+- please use only for optimizing your Fröling PE1 pellet boiler
 - web scraping is legal for "intended usage" and for public data
   - reading your own "private" data is IMHO the same as reading public data (IANAL) 
-  - Froeling should provide a (local) LAN-API to the PE1 pellet boiler, avoiding the hassle of going thru the internet and the Fröling servers in order to get some local data in the first place 
+  - see LICENSE file for more and detailed information
+- Froeling, please provide a (local) LAN-API to the PE1 pellet boiler, avoiding the hassle of going thru the internet and the Fröling servers just to get some local data
+  
   
