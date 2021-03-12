@@ -323,6 +323,74 @@ class Database:
             self.printer.print("SQLite SELECT error occurred(get_consumption): " + e.args[0])
             return '[]'
 
+    def _get_last_timeslot(self):
+        """ get the last timeslot in the database """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        sql = """
+            SELECT * FROM logs
+            WHERE timestamp = (
+                SELECT timestamp FROM logs
+                ORDER BY id DESC LIMIT 1
+            )
+        """
+        try:
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            conn.close()
+            return rows
+        #
+        except sqlite3.Error as e:
+            self.printer.print("SQLite SELECT error occurred(get_last_timeslot): " + e.args[0])
+            return '[]'
+
+    def _get_attrs(self):
+        """ get the list of attributes in the database """
+        conn: Connection = self.__get_connection()
+        cursor: Cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM attrs")
+            rows = cursor.fetchall()
+            conn.close()
+            return rows
+        #
+        except sqlite3.Error as e:
+            self.printer.print("SQLite SELECT error occurred(get_attrs): " + e.args[0])
+            return '[]'
+
+    def check_attrs(self):
+        """ compare the attrs with the last database record """
+        try:
+            slots = self._get_last_timeslot()
+            attrs = self._get_attrs()
+            diffs = []
+            # check lengths
+            if len(slots) != len(attrs):
+                diffs.append('The number of rows read from the website is not what is expected.')
+            # check attributes
+            for attr in attrs:
+                attr_page_key = attr[0]
+                attr_label = attr[1]
+                attr_tunit = attr[2]
+                for slot in slots:
+                    if slot[4] == attr_page_key:
+                        if slot[5] != attr_label:
+                            diffs.append("Label has changed in page_key: " + attr_page_key)
+                        if slot[7] != attr_tunit:
+                            diffs.append("Tunit has changed in page_key: " + attr_page_key)
+                        break
+                else:
+                    diffs.append("Cannot find page_key: " + attr_page_key)
+                #
+            if len(diffs) > 0:
+                exc_text = "Error: deviation(s) detected in the metadata read from website:\n"
+                for diff in diffs:
+                    exc_text += diff + "\n"
+                self.printer.print(exc_text)
+        #
+        except sqlite3.Error as e:
+            self.printer.print("SQLite SELECT error occurred(check_attrs): " + e.args[0])
+
 
 if __name__ == '__main__':
     print('So sorry, the ' + os.path.basename(__file__) + ' module does not run as a standalone.')

@@ -14,8 +14,8 @@ from logger import scheduler
 
 def run(username=None, password=None, period_minutes=None):
     """ argument == 'None' will be replaced with the value from the configuration file """
+    printer = printlog.PrintLog('logger.log')
     try:
-        printer = printlog.PrintLog('logger.log')
         if username == 'unittest':
             job = session.Session(
                 local_settings.login_url(),
@@ -37,7 +37,7 @@ def run(username=None, password=None, period_minutes=None):
                 password,
                 printer
             )
-            # repeat the intenet query at fixed times (schedule)
+            # repeat the internet query at fixed times (schedule)
             scheduler.Scheduler(
                 username,
                 password,

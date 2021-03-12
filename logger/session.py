@@ -47,6 +47,7 @@ class Session:
                 for page in self.pages:
                     for info in page:
                         db.insert_log(info)
+                db.check_attrs()
         #
         except Exception as exc:
             """ manage all and any exceptions in class logger """
