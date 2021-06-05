@@ -84,6 +84,9 @@ def run(from_date=None, to_date=None, with_timeslots=True):
     """
         argument from_date may be replaced with the first timestamp
         from the database, to_date with the last timestamp
+        with_timeslots (True):
+            if the time range (from - to) is larger than 24 hrs then
+            the plotter time range will be split into charts of one day each
     """
     printer = printlog.PrintLog('plotter.log')
     try:
