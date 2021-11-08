@@ -1,5 +1,6 @@
 # connect-web-logger
 Scrape & log information from a registered account at connect-web.froeling.com.
+Changes in the Fröling website may cause errors in this application, which is not synced with the website but fixed later on. 
 
 # Prerequisites
 - a Fröling PE1 pellet boiler at your home 
@@ -22,6 +23,7 @@ Scrape & log information from a registered account at connect-web.froeling.com.
 # Output
 - process status information (stdout, stderr)
 - a SQLite database file containing the periodic data
+  - is automatically recreated (empty) after a deletion
 - four PNG plotter files (see Wiki/charts)
 
 # Running the app

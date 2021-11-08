@@ -108,53 +108,40 @@ class Session:
         self.__scroll2bottom(self.driver)
         count = 1
         while count <= self.MAXTRY:
-            keys = driver.find_elements_by_xpath("//div[@class='key']")
-            if page_id == 'System':
-                values = driver.find_elements_by_xpath("//div[@class='value']")  # proper spelling in html source
-            else:
-                values = driver.find_elements_by_xpath("//div[@calss='value']")  # BEWARE: typo in html source
-            pairs, noblanks = self.__join_pairs(keys, values, page_id)
-            if noblanks and len(pairs) > 0:
-                return pairs  # success
+            try:
+                lines = driver.find_elements_by_class_name("info-line")
+                pairs = []
+                for idx, line in enumerate(lines):
+                    txt = line.text
+                    txtarr = txt.split("\n")
+                    label = txtarr[0]
+                    pair = self.__split_value_unit(txtarr[1])
+                    value = pair['value']
+                    tunit = pair['unit']
+                    page_idx = str(idx + 1)
+                    if len(page_idx) == 1:
+                        page_idx = '0' + page_idx
+                    pairs.append({
+                        'customer_id': local_settings.customer_id(),
+                        'timestamp': self.timestamp,
+                        'page_id': page_id,
+                        'page_key': page_id + page_idx,
+                        'label': label,
+                        'value': value,
+                        'tunit': tunit
+                    })
+            except Exception as e:
+                print("Unexpected error: " + str(e))
+                pairs = [] # failed
+            success = len(pairs) > 0
+            if success:
+                return pairs
             else:
                 time.sleep(1)  # delayed retry
                 self.printer.print(self.now() + ' >>> Retry in get value pairs for ' + page_id)
                 count += 1
         self.printer.print(self.now() + ' >>> Error: time out in get value pairs for ' + page_id)
         return []  # failed
-
-    def __join_pairs(self, keys, values, page_id):
-        """ join keys, values and units in a list of tuples """
-        pairs = []
-        if len(keys) != len(values):
-            self.printer.print(self.now() + ' >>> key, value arrays not same length.')
-            noblanks = False
-            return noblanks, pairs
-        noblanks = True
-        idx = 0
-        while idx < len(keys):
-            key = keys[idx].text
-            value = values[idx].text
-            if len(key) == 0 or len(value) == 0:
-                noblanks = False
-                break
-            pair = self.__split_value_unit(value)
-            value = pair['value']
-            tunit = pair['unit']
-            page_idx = str(idx + 1)
-            if len(page_idx) == 1:
-                page_idx = '0' + page_idx
-            pairs.append({
-                'customer_id': local_settings.customer_id(),
-                'timestamp': self.timestamp,
-                'page_id': page_id,
-                'page_key': page_id + page_idx,
-                'label': key,
-                'value': value,
-                'tunit': tunit
-            })
-            idx += 1  # next key, value
-        return pairs, noblanks
 
     def __split_value_unit(self, value_unit):
         """ properly split values and technical units """
