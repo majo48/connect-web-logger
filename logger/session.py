@@ -10,6 +10,7 @@
 """
 from shared import database, local_settings
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from sys import platform
 import time
@@ -67,7 +68,7 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             time.sleep(1)  # delayed for dynamic page
-            get_component_tags = self.driver.find_elements_by_tag_name("mat-card-title")
+            get_component_tags = self.driver.find_elements(By.TAG_NAME, "mat-card-title")
             if len(get_component_tags) == 1:
                 element = get_component_tags[0].text
                 if element.startswith(component_name):
@@ -89,7 +90,7 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             try:
-                keys = driver.find_elements_by_xpath("//div[@class='key']")
+                keys = driver.find_elements(By.XPATH, "//div[@class='key']")
                 target = keys[-1]  # last element in array
                 driver.execute_script('arguments[0].scrollIntoView(true);', target)
                 time.sleep(1)
@@ -109,7 +110,7 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             try:
-                lines = driver.find_elements_by_class_name("info-line")
+                lines = driver.find_elements(By.CLASS_NAME, "info-line")
                 pairs = []
                 for idx, line in enumerate(lines):
                     txt = line.text
@@ -171,7 +172,7 @@ class Session:
         """ read the boiler state from the boiler component page """
         try:
             if page_id == 'Boiler':
-                lis = driver.find_elements_by_xpath("//li")
+                lis = driver.find_elements(By.XPATH, "//li")
                 li = lis[0].text
                 l = li.split(':')
                 if len(l) == 2 and l[0] == 'Kesselzustand':
@@ -237,8 +238,8 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             try:
-                input_tags = self.driver.find_elements_by_tag_name("input")
-                button_tags = self.driver.find_elements_by_tag_name("button")
+                input_tags = self.driver.find_elements(By.TAG_NAME, "input")
+                button_tags = self.driver.find_elements(By.TAG_NAME, "button")
                 if len(input_tags) >= 2 and len(button_tags) >= 1:
                     break  # success
             except:
@@ -262,7 +263,7 @@ class Session:
             if url == local_settings.facility_url():
                 # check default language
                 try:
-                    divs = self.driver.find_elements_by_xpath("//div[contains(@class, 'menu-item-label')]")
+                    divs = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'menu-item-label')]")
                     check = divs[0].text
                     if check[0:13] != 'MY FACILITIES':
                         self.printer.print(self.now() + ' >>> default language must be set to English.')
@@ -285,7 +286,7 @@ class Session:
         count = 1
         while count <= self.MAXTRY:
             time.sleep(1)
-            get_tags = self.driver.find_elements_by_tag_name("froeling-facility-detail-container")
+            get_tags = self.driver.find_elements(By.TAG_NAME, "froeling-facility-detail-container")
             if len(get_tags) == 1:
                 break
             count += 1
